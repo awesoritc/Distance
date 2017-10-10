@@ -40,29 +40,26 @@ public class RouteSelector {
         ArrayList<Integer> array = new ArrayList<>();
         for(int i = 0; i < rooms.length; i++){
 
-            if(rooms[i].get_value(current_area) > 0){
+            if(rooms[i].get_room_shortage_til_next(Util.get_interval(current_area, rooms[i].getArea_number(), setting)) > 0){
                 route_list.add(rooms[i]);
             }
         }
 
-        System.out.println("1");
-            for (int i = 0; i < route_list.size(); i++) {
-                System.out.println("value : " + route_list.get(i).get_value(current_area));
-            }
-
-        System.out.println("2");
         if(route_list.size() > 20){
             //sort
             route_list = sort_array_by_value(route_list, current_area);
-            for (int i = 0; i < route_list.size(); i++) {
-                System.out.println("value : " + route_list.get(i).get_value(current_area));
+
+            ArrayList<Room> lis = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                lis.add(route_list.get(i));
             }
+            return lis;
         }
 
 
 
-        if(array.size() > 0){
-            System.out.println("Time : " + calculate_route_time(array));
+        if(route_list.size() > 0){
+            System.out.println("Time : " + calculate_route_time(route_list));
         }
 
         return route_list;
@@ -75,20 +72,20 @@ public class RouteSelector {
 
 
     //かかった距離
-    public int calculate_route_time(ArrayList<Integer> array){
+    public int calculate_route_time(ArrayList<Room> array){
 
         int time = 0;
-        int x_now = rooms[array.get(0)].getX_pos();
-        int y_now = rooms[array.get(0)].getY_pos();
+        int x_now = array.get(0).getX_pos();
+        int y_now = array.get(0).getY_pos();
         for(int i = 1; i < array.size(); i++){
-            int x_next = rooms[array.get(i)].getX_pos();
+            int x_next = array.get(i).getX_pos();
 
             if(x_now > x_next){
                 time += x_now - x_next;
             }else{
                 time += x_next - x_now;
             }
-            int y_next = rooms[array.get(i)].getY_pos();
+            int y_next = array.get(i).getY_pos();
             if(y_now > y_next){
                 time += y_now - y_next;
             }else{
@@ -108,17 +105,16 @@ public class RouteSelector {
         ArrayList<Room> ret_array = array;
 
         for (int i = 0; i < array.size(); i++) {
-
             for (int j = 0; j < array.size(); j++) {
                 if(i < j){
                     //時間かかりすぎる
-                    if(ret_array.get(i).get_value(current_area) < ret_array.get(j).get_value(current_area)){
+                    if((ret_array.get(i).get_room_shortage_til_next(Util.get_interval(current_area, ret_array.get(i).getArea_number(), setting)) / ret_array.get(i).getDistance_to_gravity()[current_area]) <
+                            (ret_array.get(j).get_room_shortage_til_next(Util.get_interval(current_area, ret_array.get(i).getArea_number(), setting)) / ret_array.get(i).getDistance_to_gravity()[current_area])){
                         Room tmp = ret_array.get(i);
                         ret_array.set(i, ret_array.get(j));
                         ret_array.set(j, tmp);
                     }
                 }
-
             }
         }
 

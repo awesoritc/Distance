@@ -6,19 +6,14 @@ public class Simulator {
 
     Setting setting;
 
-    private int max_item, variation;
-    private int counter, shortage, sales;
+    private int shortage, sales;
 
     private int num_rooms = 100;
 
     private Room[] rooms = new Room[num_rooms];
 
-    private int move_time;
-
     private ArrayList<Integer> sales_history = new ArrayList<>();
     private ArrayList<Room> replenishment_array = new ArrayList<>();
-
-    private int x_pos, y_pos;
 
 
     Simulator(Setting setting){
@@ -32,11 +27,6 @@ public class Simulator {
     //初期化
     public void init(){
 
-        max_item = 10;
-        variation = 1;
-        move_time = 5;
-
-        counter = 0;
         shortage = 0;
 
         //Roomを作成する
@@ -48,31 +38,39 @@ public class Simulator {
                 a++;
             }
         }
-        System.out.println("a" + a);
 
         //gravity_pointsを作成
         int[][] gravity_points = calculate_gravity_points(rooms);
+        for(int i = 0; i < gravity_points.length; i++){
+            System.out.println("(" + gravity_points[i][0] + "," + gravity_points[i][1] + ")");
+        }
 
 
         //Goodsを登録(gravityも)
         for(int i = 0; i < setting.number_of_rooms; i++){
             rooms[i].setDistance_to_gravity(gravity_points);
-            //rooms[i].register_goods(0);
-            rooms[i].register_goods(new Random().nextInt(3));
+            rooms[i].register_goods(0);
+            //rooms[i].register_goods(new Random().nextInt(3));
         }
     }
 
 
     //補充する順番に部屋番号を返却
-    public void create_route(int area_number, int day){
+    public void create_route(int current_area, int day){
         RouteSelector routeSelector = new RouteSelector(rooms, setting);
         //routeSelector.route_time(area_number);
 
 
         //TODO:ここで補充するリストを作る
 
-        replenishment_array = sort_in_order_roomId(routeSelector.choose_rooms_to_go(area_number));
+        ArrayList<Room> array = routeSelector.choose_rooms_to_go(current_area);
+
+        replenishment_array = sort_in_order_roomId(array);
         //System.out.println("Day : " + day + ", number_rooms : " + replenishment_array.size());
+        for (int i = 0; i < replenishment_array.size(); i++) {
+            System.out.println("id : " + replenishment_array.get(i).getId() +
+                    ", shortage : " + replenishment_array.get(i).get_room_shortage_til_next(Util.get_interval(current_area, replenishment_array.get(i).getArea_number(), setting)));
+        }
     }
 
 
@@ -90,6 +88,7 @@ public class Simulator {
 
         //record("\n", "replenishment");
     }
+
 
     //少ないものを補充
     public void do_replenishment(int day){
@@ -154,16 +153,18 @@ public class Simulator {
     //重心(x,y)
     public int[][] calculate_gravity_points(Room[] rooms){
         int[][] total = new int[setting.getNumber_of_areas()][2];
+        int num_rooms_per_area = setting.number_of_rooms/setting.number_of_areas;
 
         int a = 0;
         for (int i = 0; i < setting.getNumber_of_areas(); i++) {
-            for (int j = 0; j < setting.number_of_rooms/setting.number_of_areas; j++) {
+            for (int j = 0; j < num_rooms_per_area; j++) {
                     total[i][0] += rooms[a].getX_pos();
                     total[i][1] += rooms[a].getY_pos();
                     a++;
             }
-            total[i][0] = (int)Math.round(total[i][0] / rooms.length);
-            total[i][1] = (int)Math.round(total[i][1] / rooms.length);
+            System.out.println("total : (" + total[i][0] + "," + total[i][1] + ")");
+            total[i][0] = (int)Math.round(total[i][0] / num_rooms_per_area);
+            total[i][1] = (int)Math.round(total[i][1] / num_rooms_per_area);
         }
 
 

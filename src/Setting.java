@@ -1,5 +1,7 @@
 public class Setting {
 
+    boolean test;
+
     final int days = 100;//シミュレーションの期間
     final int number_of_rooms = 100;//部屋の数
 
@@ -27,6 +29,16 @@ public class Setting {
     final int moving_average_interval = 5;//移動平均に使用する
     final int border_for_replenishment = 0;
 
+
+    Setting(){
+        test = false;
+    }
+
+
+    Setting(boolean test){
+        this.test = test;
+
+    }
 
     public int getDays() {
         return days;

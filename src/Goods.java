@@ -13,8 +13,10 @@ public class Goods {
 
 
 
-    Goods(int[] variation, Setting setting){
+    Goods(int goods_variation_num, Setting setting){
         this.setting = setting;
+
+        int[] variation = setting.getGoods_variation()[goods_variation_num];
 
         this.average = variation[0];
         this.variance = variation[1];
@@ -56,12 +58,19 @@ public class Goods {
         this.max_item = max_item;
     }
 
+    public ArrayList<Integer> getSales_record() {
+        return sales_record;
+    }
+
     //{shortage, sales}
     public int[] consume(){
         NormalDistribution nd = new NormalDistribution(average, variance);
         int consume = (int) Math.round(nd.random());
         if(consume < 0){
             consume = 0;
+        }
+        if(setting.test){
+            System.out.println("consume : " + consume);
         }
         int shortage = 0;
         int sales = 0;
@@ -81,6 +90,9 @@ public class Goods {
             sales = 0;
             sales_record.add(sales);
         }
+        if(setting.test){
+            System.out.println("sales : " + sales + ", shortage : " + shortage);
+        }
         return new int[]{shortage, sales};
     }
 
@@ -96,7 +108,6 @@ public class Goods {
         if(sales_record.size() > setting.getMoving_average_interval()){
             for(int i = 0; i < setting.getMoving_average_interval(); i++){
                 tmp += sales_record.get(sales_record.size()-(i+1));
-                //System.out.println(i);
             }
         }else{
             return 0;
@@ -104,9 +115,18 @@ public class Goods {
 
 
         int consume_til_next = (tmp / setting.getMoving_average_interval()) * interval;
+        if(setting.test){
+            String s = "";
+            for(int i = 0; i < setting.getMoving_average_interval(); i++){
+                s += String.valueOf(sales_record.get(sales_record.size()-(i+1))) + " ";
+            }
+
+            System.out.println(s + " interval : " + interval);
+            System.out.println("consume_til_next : " + consume_til_next);
+        }
+
 
         if(consume_til_next > stock){
-            //System.out.println("c" + String.valueOf(consume_til_next - stock));
             return consume_til_next - stock;
         }
 

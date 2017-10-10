@@ -29,7 +29,7 @@ public class Room {
 
         create_position(area_number);
 
-        System.out.println("area : " + area_number + ", route : " + route_number + "(" + x_pos + "," + y_pos + ")");
+        //System.out.println("area : " + area_number + ", route : " + route_number + "(" + x_pos + "," + y_pos + ")");
     }
 
     public int getArea_number() {
@@ -72,6 +72,9 @@ public class Room {
                 distance += y_pos - gravity_points[i][1];
             }
 
+            if(distance == 0){
+                distance = 1;
+            }
             this.distance_to_gravity[i] = distance;
         }
     }
@@ -84,7 +87,11 @@ public class Room {
         return id;
     }
 
-    public void create_position(int area_number){
+    public ArrayList<Goods> getGoods_list() {
+        return goods_list;
+    }
+
+    private void create_position(int area_number){
 
         Random random = new Random();
         int x_start = setting.getArea_borders()[area_number][0];
@@ -98,7 +105,7 @@ public class Room {
 
 
     public void register_goods(int goods_number){
-        Goods goods = new Goods(setting.getGoods_variation()[goods_number], setting);
+        Goods goods = new Goods(goods_number, setting);
         goods_list.add(goods);
     }
 
@@ -145,7 +152,7 @@ public class Room {
     }
 
 
-    public float get_value(int current_area){
+    /*public float get_value(int current_area){
 
         int interval = 0;
         if(getArea_number() > current_area){
@@ -154,11 +161,11 @@ public class Room {
             interval = area_number + setting.getNumber_of_areas() - current_area + 1;
         }
 
-        System.out.println("expect : " + get_room_shortage_til_next(interval));
+        //System.out.println("expect : " + get_room_shortage_til_next(interval));
         if(distance_to_gravity[current_area] == 0){
             return get_room_shortage_til_next(interval);
         }
 
         return get_room_shortage_til_next(interval) / distance_to_gravity[current_area];
-    }
+    }*/
 }
