@@ -141,31 +141,41 @@ public class Room {
     }
 
 
-    public int get_room_shortage_til_next(int interval){
+    public int get_room_shortage_til_next(int current_area){
+
+        int interval = Util.get_interval(current_area, area_number, setting);
 
         int total_shortage = 0;
         for (Goods aGoods_list : goods_list) {
             total_shortage += aGoods_list.get_shortage_til_next(interval);
         }
 
+        if(total_shortage > 0){
+            //System.out.println(getId() + "  ,   " + total_shortage);
+        }
+
         return total_shortage;
     }
 
 
-    /*public float get_value(int current_area){
 
-        int interval = 0;
-        if(getArea_number() > current_area){
+    //TODO:get_valueの修正
+    public double get_value(int current_area){
+
+        //double interval = Util.get_interval(current_area, area_number, setting);
+        /*if(getArea_number() > current_area){
             interval = area_number - current_area;
         }else{
             interval = area_number + setting.getNumber_of_areas() - current_area + 1;
-        }
+        }*/
 
         //System.out.println("expect : " + get_room_shortage_til_next(interval));
         if(distance_to_gravity[current_area] == 0){
-            return get_room_shortage_til_next(interval);
+            return get_room_shortage_til_next(current_area);
         }
 
-        return get_room_shortage_til_next(interval) / distance_to_gravity[current_area];
-    }*/
+        System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
+
+        return get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area];
+    }
 }

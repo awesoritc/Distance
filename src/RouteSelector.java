@@ -30,6 +30,49 @@ public class RouteSelector {
 
 
 
+
+
+    public ArrayList<Room> choose_rooms(int current_area){
+
+        ArrayList<Integer> array = new ArrayList<>();
+
+        //次の補充までに欠品の出る部屋を取得
+        for(int i = 0; i < rooms.length; i++){
+            if(rooms[i].get_room_shortage_til_next(current_area) > 0){
+                route_list.add(rooms[i]);
+            }
+        }
+
+        //取得した部屋にフィルタをかけて補充に回る部屋を決定
+
+        /*if(route_list.size() >= 20){
+
+            for (int i = 0; i < route_list.size(); i++) {
+
+                for (int j = 0; j < route_list.size(); j++) {
+
+                    if(i < j){
+                        if(route_list.get(i).get_value(current_area) < route_list.get(j).get_value(current_area)){
+                            Room tmp = route_list.get(i);
+                            route_list.set(i, route_list.get(j));
+                            route_list.set(j, tmp);
+                        }
+                    }
+
+                }
+            }
+
+            for (int i = 0; i < route_list.size() - 20; i++) {
+                route_list.remove(20+i);
+            }
+        }*/
+
+        return route_list;
+    }
+
+
+    /*
+
     public ArrayList<Room> choose_rooms_to_go(int current_area){
         System.out.println("route_selector");
         int max_area = setting.getNumber_of_areas() - 1;
@@ -105,6 +148,7 @@ public class RouteSelector {
         ArrayList<Room> ret_array = array;
 
         for (int i = 0; i < array.size(); i++) {
+
             for (int j = 0; j < array.size(); j++) {
                 if(i < j){
                     //時間かかりすぎる
@@ -115,6 +159,7 @@ public class RouteSelector {
                         ret_array.set(j, tmp);
                     }
                 }
+
             }
         }
 
@@ -122,5 +167,5 @@ public class RouteSelector {
     }
 
 
-    //public void route_optimizer(){}
+    //public void route_optimizer(){}*/
 }

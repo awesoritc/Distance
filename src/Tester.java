@@ -5,7 +5,28 @@ public class Tester {
     public static void main(String args[]) {
 
 
-        room_getShortageTilNext_test();
+        Setting setting = new Setting();
+        Simulator simulator = new Simulator(setting);
+        Room room = new Room(0, 0, setting, 0);
+        room.register_goods(0);
+        int[][] gravity_points = {{1,1},{1,14},{17, 18},{12,12},{4,15}};
+        room.setDistance_to_gravity(gravity_points);
+
+        for (int i = 0; i < 100; i++) {
+            room.do_consume();
+            System.out.println("stock:" + room.getGoods_list().get(0).getStock());
+
+            System.out.println("shortage:" + room.get_room_shortage_til_next(i%5));
+
+            if(i%5 == 0){
+                room.replenishment_all();
+                System.out.println("rep");
+            }
+        }
+
+        for (int i = 0; i < room.getGoods_list().get(0).getSales_record().size(); i++) {
+            System.out.println("day:" + i + ", sales:" + room.getGoods_list().get(0).getSales_record().get(i));
+        }
     }
 
 
@@ -204,4 +225,5 @@ public class Tester {
 
 
     }
+
 }
