@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Tester {
 
@@ -6,6 +7,25 @@ public class Tester {
 
 
         Setting setting = new Setting();
+
+        ArrayList<Integer> array = new ArrayList<>();
+
+        for (int i = 0; i < 30; i++) {
+            Random rand = new Random();
+            array.add(rand.nextInt(100));
+        }
+
+int tmp = 0;
+        if(array.size() > setting.getMoving_average_interval()){
+            for(int i = 0; i < setting.getMoving_average_interval(); i++){
+                tmp += array.get(array.size()-(i+1));
+            }
+        }
+        System.out.println(tmp);
+        System.out.println();
+        for (int i = 0; i < array.size(); i++) {
+            System.out.println(array.get(i));
+        }
         /*Simulator simulator = new Simulator(setting);
         Room room = new Room(0, 0, setting, 0);
         room.register_goods(0);

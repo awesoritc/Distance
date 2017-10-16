@@ -54,19 +54,7 @@ public class Simulator {
             }
         }
 
-        //gravity_pointsを作成
-        int[][] gravity_points = calculate_gravity_points(rooms);
-        for(int i = 0; i < gravity_points.length; i++){
-            System.out.println("(" + gravity_points[i][0] + "," + gravity_points[i][1] + ")");
-        }
-
-
-        //Goodsを登録(gravityも)
-        for(int i = 0; i < setting.number_of_rooms; i++){
-            rooms[i].setDistance_to_gravity(gravity_points);
-            //rooms[i].register_goods(0);
-            rooms[i].register_goods(new Random().nextInt(3));
-        }
+        init_share();
     }
 
     //Executor2本走らせるよう
@@ -76,6 +64,12 @@ public class Simulator {
 
         rooms = def_room;
 
+        init_share();
+    }
+
+
+    private void init_share(){
+
         //gravity_pointsを作成
         int[][] gravity_points = calculate_gravity_points(rooms);
         for(int i = 0; i < gravity_points.length; i++){
@@ -86,7 +80,7 @@ public class Simulator {
         //Goodsを登録(gravityも)
         for(int i = 0; i < setting.number_of_rooms; i++){
             rooms[i].setDistance_to_gravity(gravity_points);
-            //rooms[i].register_goods(0);
+            //rooms[i].register_goods(2);
             rooms[i].register_goods(new Random().nextInt(3));
         }
     }
@@ -222,26 +216,6 @@ public class Simulator {
     }
 
 
-
-    public ArrayList<Room> sort_in_order_roomId(ArrayList<Room> array){
-        ArrayList<Room> ret_array = array;
-
-        for (int i = 0; i < array.size(); i++) {
-            for (int j = 0; j < array.size(); j++) {
-                if(i < j){
-                    if(ret_array.get(i).getId() > ret_array.get(i).getId()){
-                        Room tmp = ret_array.get(i);
-                        ret_array.set(i, ret_array.get(j));
-                        ret_array.set(j, tmp);
-                    }
-                }
-
-            }
-        }
-        return ret_array;
-    }
-
-
     public int get_sales(){
         //System.out.println(sales);
         return sales;
@@ -258,6 +232,7 @@ public class Simulator {
 
 
     int counter = 0;
+    int counterb = 0;
     public ArrayList<Room> route(Room[] rooms, int current_area){
 
 
@@ -273,10 +248,12 @@ public class Simulator {
             if(rooms[i].getArea_number() == current_area){
                 array.add(rooms[i]);
             }
-
-            route = array;
         }
-            //ここまで
+        //ここまで
+
+        return array;
+
+
         }else if(route_choice == 1){
             //動的に作成
 
@@ -319,6 +296,7 @@ public class Simulator {
                     route.add(array.get(i));
                     counter++;
                 }
+                counterb++;
             }else{
                 for (int i = 0; i < array.size(); i++) {
                     route.add(array.get(i));
@@ -326,42 +304,25 @@ public class Simulator {
                 }
             }
 
-        }
+            //選択し終わったらid順に戻す
+            for (int i = 0; i < route.size(); i++) {
+                for (int j = 0; j < route.size(); j++) {
 
-
-
-
-
-
-        //選択し終わったらid順に戻す
-        for (int i = 0; i < route.size(); i++) {
-            for (int j = 0; j < route.size(); j++) {
-
-                if(i < j){
-                    //iよりもjの価値の方が高ければ、jの部屋を前に変更
-                    if(route.get(i).getId() > array.get(j).getId()){
-                        Room tmp = route.get(i);
-                        route.set(i, route.get(j));
-                        route.set(j, tmp);
+                    if(i < j){
+                        //iよりもjの価値の方が高ければ、jの部屋を前に変更
+                        if(route.get(i).getId() > array.get(j).getId()){
+                            Room tmp = route.get(i);
+                            route.set(i, route.get(j));
+                            route.set(j, tmp);
+                        }
                     }
                 }
             }
+
+            return route;
         }
 
-        for (int i = 0; i < route.size(); i++) {
-            System.out.println("確認"+route.get(i).getId());
-        }
-
-        //確認
-
-        for (int i = 0; i < route.size(); i++) {
-            //System.out.println("id:" + route.get(i).getId() + ", value:" + route.get(i).get_value(current_area));
-        }
-
-
-        //選択したものを返す
-        return route;
-
+        return null;
     }
 
     public int getTotal_time() {
