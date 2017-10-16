@@ -6,7 +6,7 @@ public class Tester {
 
 
         Setting setting = new Setting();
-        Simulator simulator = new Simulator(setting);
+        /*Simulator simulator = new Simulator(setting);
         Room room = new Room(0, 0, setting, 0);
         room.register_goods(0);
         int[][] gravity_points = {{1,1},{1,14},{17, 18},{12,12},{4,15}};
@@ -26,7 +26,7 @@ public class Tester {
 
         for (int i = 0; i < room.getGoods_list().get(0).getSales_record().size(); i++) {
             System.out.println("day:" + i + ", sales:" + room.getGoods_list().get(0).getSales_record().get(i));
-        }
+        }*/
     }
 
 
@@ -47,7 +47,7 @@ public class Tester {
             int[] consume = goods.consume();
             System.out.println("shortage : " + consume[0] + ", sales : " + consume[1] +
                     ", stock : " + goods.getStock() +
-                    ", expect : " + goods.get_shortage_til_next(Util.get_interval(i%5, room_area_num, setting)));
+                    ", expect : " + goods.get_shortage_til_next(Util.get_interval(i%5, room_area_num)));
             if(i%5 == room_area_num){
                 goods.replenishment();
                 System.out.println("rep : " + goods.getStock());
@@ -212,7 +212,7 @@ public class Tester {
         for (int i = 0; i < 100; i++) {
             room.do_consume();
             if(i%5 == room_area_num) room.replenishment_all();
-            room.get_room_shortage_til_next(Util.get_interval(i%5, room_area_num, setting));
+            room.get_room_shortage_til_next(Util.get_interval(i%5, room_area_num));
         }
 
         ArrayList<Integer> array = room.getGoods_list().get(0).getSales_record();

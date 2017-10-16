@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Simulator {
@@ -12,15 +13,29 @@ public class Simulator {
 
     private Room[] rooms = new Room[num_rooms];
 
+    private int total_time = 0;
+
     private ArrayList<Integer> sales_history = new ArrayList<>();
     private ArrayList<Room> replenishment_array = new ArrayList<>();
 
+    private int route_choice;
 
-    Simulator(Setting setting){
+
+    Simulator(Setting setting, int route_choice){
 
         this.setting = setting;
+        this.route_choice = route_choice;
 
         init();
+    }
+
+
+    Simulator(Setting setting, Room[] rooms, int route_choice){
+
+        this.setting = setting;
+        this.route_choice = route_choice;
+
+        init(rooms);
     }
 
 
@@ -38,6 +53,28 @@ public class Simulator {
                 a++;
             }
         }
+
+        //gravity_pointsを作成
+        int[][] gravity_points = calculate_gravity_points(rooms);
+        for(int i = 0; i < gravity_points.length; i++){
+            System.out.println("(" + gravity_points[i][0] + "," + gravity_points[i][1] + ")");
+        }
+
+
+        //Goodsを登録(gravityも)
+        for(int i = 0; i < setting.number_of_rooms; i++){
+            rooms[i].setDistance_to_gravity(gravity_points);
+            //rooms[i].register_goods(0);
+            rooms[i].register_goods(new Random().nextInt(3));
+        }
+    }
+
+    //Executor2本走らせるよう
+    public void init(Room[] def_room){
+
+        shortage = 0;
+
+        rooms = def_room;
 
         //gravity_pointsを作成
         int[][] gravity_points = calculate_gravity_points(rooms);
@@ -74,23 +111,16 @@ public class Simulator {
             //        + current_area + ", shortage : " + replenishment_array.get(i).get_room_shortage_til_next(current_area) + "\n", "replenishment");
         }
         record(String.valueOf(day) + "\n\n", "replenishment");*/
+
+
+        System.out.println("timeTAG:" + calculate_route_time(replenishment_array));
+        total_time += calculate_route_time(replenishment_array);
+
+
     }
 
 
     //補充
-
-    //ルート決め打ち
-    public void do_replenishment(int current_area, int day){
-
-        for(int i = 0; i < 20; i++){
-            ArrayList<Integer> hstock = rooms[i + current_area*20].replenishment_all();
-            /*record("Room : " + String.valueOf(i + current_area*20) + ", area : " + rooms[i + current_area*20].getArea_number() +
-                    ", stock : " + String.valueOf(hstock.get(0)) + ", rep_area : " + String.valueOf(current_area) +
-                    ", day : " + day + "\n", "replenishment");*/
-        }
-
-        //record("\n", "replenishment");
-    }
 
     //少ないものを補充
     public void do_replenishment(int day){
@@ -157,6 +187,42 @@ public class Simulator {
 
 
 
+    public int calculate_route_time(ArrayList<Room> route){
+
+
+        if(route.size() != 0){
+
+            int current_x = route.get(0).getX_pos();
+            int current_y = route.get(0).getY_pos();
+
+            int routetime = 0;
+            for (int i = 1; i < route.size(); i++) {
+
+                int next_x = route.get(i).getX_pos();
+                int next_y = route.get(i).getY_pos();
+                int next_time = 0;
+                if(current_x > next_x){
+                    next_time += current_x - next_x;
+                }else{
+                    next_time += next_x - current_x;
+                }
+                if(current_y > next_y){
+                    next_time += current_y - next_y;
+                }else{
+                    next_time += next_y - current_y;
+                }
+
+                routetime += next_time;
+            }
+
+            return routetime;
+        }
+
+        return 0;
+    }
+
+
+
     public ArrayList<Room> sort_in_order_roomId(ArrayList<Room> array){
         ArrayList<Room> ret_array = array;
 
@@ -191,67 +257,83 @@ public class Simulator {
 
 
 
-
+    int counter = 0;
     public ArrayList<Room> route(Room[] rooms, int current_area){
 
+
         ArrayList<Room> array = new ArrayList<>();
+        ArrayList<Room> route = new ArrayList<>();
 
-        //とりあえずid順にarrayに挿入する
+        if(route_choice == 0){
+            //決め打ち
+
+
+            //ここからエリア固定
         for (int i = 0; i < rooms.length; i++) {
-            if(rooms[i].get_value(current_area) > 0){
-
-                if(rooms[i].getArea_number() == current_area){
-                    array.add(rooms[i]);
-                }
-                //array.add(rooms[i]);
-
-                //System.out.println("id:" + rooms[i].getId() + ", value" + rooms[i].get_value(current_area) + ", stock:" + rooms[i].getGoods_list().get(0).getStock());
+            if(rooms[i].getArea_number() == current_area){
+                array.add(rooms[i]);
             }
 
-        }System.out.println(array.size());
+            route = array;
+        }
+            //ここまで
+        }else if(route_choice == 1){
+            //動的に作成
 
-        //価値順に並べる
-        for (int i = 0; i < array.size(); i++) {
-            for (int j = 0; j < array.size(); j++) {
 
-                if(i < j){
-                    //iよりもjの価値の方が高ければ、jの部屋を前に変更
-                    if(array.get(i).get_value(current_area) < array.get(j).get_value(current_area)){
-                        Room tmp = array.get(i);
-                        array.set(i, array.get(j));
-                        array.set(j, tmp);
+
+            //とりあえずid順にarrayに挿入する
+            for (int i = 0; i < rooms.length; i++) {
+                if(rooms[i].get_value(current_area) > 0){
+
+                    array.add(rooms[i]);
+                }
+
+            }
+
+            //価値順に並べる
+            for (int i = 0; i < array.size(); i++) {
+                for (int j = 0; j < array.size(); j++) {
+
+                    if(i < j){
+                        //iよりもjの価値の方が高ければ、jの部屋を前に変更
+                        if(array.get(i).get_value(current_area) < array.get(j).get_value(current_area)){
+                            Room tmp = array.get(i);
+                            array.set(i, array.get(j));
+                            array.set(j, tmp);
+                        }
                     }
                 }
             }
-        }
 
-        for (int i = 0; i < array.size(); i++) {
-            System.out.println("id" + array.get(i).getId() + ", value:" + array.get(i).get_value(current_area));
-        }
+            for (int i = 0; i < array.size(); i++) {
+                System.out.println("id" + array.get(i).getId() + ", value:" + array.get(i).get_value(current_area));
+            }
 
-        //並べたものから選択する
+            //並べたものから選択する
             //TODO:ここのアルゴリズム
-        ArrayList<Room> route = new ArrayList<>();
-        //とりあえず上から20個を選択
-        if(array.size() > 20){
-            for (int i = 0; i < array.size()/*20*/; i++) {
-                if(i >= 20){
+
+            //とりあえず上から20個を選択
+            if(array.size() > 20){
+                for (int i = 0; i < 20; i++) {
+                    route.add(array.get(i));
                     counter++;
                 }
-                route.add(array.get(i));
+            }else{
+                for (int i = 0; i < array.size(); i++) {
+                    route.add(array.get(i));
+                    counter++;
+                }
             }
-        }else{
-            for (int i = 0; i < array.size(); i++) {
-                route.add(array.get(i));
-            }
+
         }
-        //route = array;
-        /*for (int i = 0; i < array.size(); i++) {
-            route.add(array.get(i));
-        }*/
 
 
-        //選択肢終わったらid順に戻す
+
+
+
+
+        //選択し終わったらid順に戻す
         for (int i = 0; i < route.size(); i++) {
             for (int j = 0; j < route.size(); j++) {
 
@@ -277,16 +359,14 @@ public class Simulator {
         }
 
 
-        //選択したものを登録する
+        //選択したものを返す
         return route;
 
-/*
-        for (int i = 0; i < rooms.length; i++) {
-            System.out.println("id:" + rooms[i].getId() + ", value" + rooms[i].get_value(current_area) + ", stock:" + rooms[i].getGoods_list().get(0).getStock());
-        }
-        return array;*/
     }
-    int counter = 0;
+
+    public int getTotal_time() {
+        return total_time;
+    }
 }
 
 

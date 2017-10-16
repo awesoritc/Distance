@@ -24,7 +24,7 @@ public class Setting {
             };
 
     final int max_item = 10;
-    final int[][] goods_variation = {{2, 1, 10}, {3, 2, 10}, {5, 3, 10}};//{average, variance, max_item} goodsの種類(3種類)
+    final int[][] goods_variation = {{2, 1, 10}, {3, 2, 10}, {5, 3, 10}};//{mean, variance, max_item} goodsの種類(3種類)
 
     final int moving_average_interval = 5;//移動平均に使用する
     final int border_for_replenishment = 0;

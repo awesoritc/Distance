@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -143,7 +144,7 @@ public class Room {
 
     public int get_room_shortage_til_next(int current_area){
 
-        int interval = Util.get_interval(current_area, area_number, setting);
+        int interval = Util.get_interval(current_area, area_number);
 
         int total_shortage = 0;
         for (Goods aGoods_list : goods_list) {
@@ -171,11 +172,12 @@ public class Room {
 
         //System.out.println("expect : " + get_room_shortage_til_next(interval));
         if(distance_to_gravity[current_area] == 0){
-            return get_room_shortage_til_next(current_area);
+            return (double)get_room_shortage_til_next(current_area);
         }
 
         //System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
 
-        return (get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
+
+        return (double)(get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
     }
 }

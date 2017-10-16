@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 
 public class Goods {
@@ -119,6 +120,7 @@ public class Goods {
 
 
         int consume_til_next = (tmp / setting.getMoving_average_interval()) * interval;
+        System.out.println("expect:" + consume_til_next + ", stock:" + stock);
         if(setting.test){
             String s = "";
             for(int i = 0; i < setting.getMoving_average_interval(); i++){
@@ -131,6 +133,7 @@ public class Goods {
 
 
         if(consume_til_next > stock){
+
             return consume_til_next - stock;
         }
 
@@ -138,23 +141,19 @@ public class Goods {
     }
 
 
-
-
-
     //1週間の平均の値を5週間分とってきて計算
-    public int get_shortage_next_5days(){
+    public double get_shortage_next_5days(int current_area){
 
         double tmp = 0;
         if(sales_record.size() > setting.getMoving_average_interval() * 5){
-            for(int i = 0; i < setting.getMoving_average_interval(); i++){
+            for(int i = 0; i < setting.getMoving_average_interval() * 5; i++){
                 tmp += sales_record.get(sales_record.size()-(i+1));
             }
 
-            return (int)Math.round(tmp / 5.0);
+            return (double)Math.round(tmp / 5.0);
         }else{
             return 0;
         }
-
 
     }
 }
