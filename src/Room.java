@@ -174,8 +174,8 @@ public class Room {
             return get_room_shortage_til_next(current_area);
         }
 
-        System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
+        //System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
 
-        return get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area];
+        return (get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
     }
 }

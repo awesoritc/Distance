@@ -11,8 +11,6 @@ public class Executor {
 
         for(int i = 0; i < setting.getDays(); i++){
 
-            System.out.println("-----day_start-----");
-
 
             int area = i%5;
 
@@ -21,9 +19,9 @@ public class Executor {
             //simulator.do_replenishment(area, i);
             simulator.do_replenishment(i);
 
-            System.out.println("-----day_end-----");
         }
 
+        System.out.println(simulator.counter);
         //simulator.do_consume();
         System.out.println(simulator.get_sales());
         System.out.println(simulator.get_shortage());

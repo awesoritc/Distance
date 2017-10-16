@@ -49,8 +49,8 @@ public class Simulator {
         //Goodsを登録(gravityも)
         for(int i = 0; i < setting.number_of_rooms; i++){
             rooms[i].setDistance_to_gravity(gravity_points);
-            rooms[i].register_goods(0);
-            //rooms[i].register_goods(new Random().nextInt(3));
+            //rooms[i].register_goods(0);
+            rooms[i].register_goods(new Random().nextInt(3));
         }
     }
 
@@ -100,6 +100,7 @@ public class Simulator {
         for(int i = 0; i < replenishment_array.size(); i++){
             ArrayList<Integer> hstock = rooms[replenishment_array.get(i).getId()].replenishment_all();
         }
+
     }
 
 
@@ -118,22 +119,6 @@ public class Simulator {
 
         }
     }
-
-
-    //現在の状況を記録する
-    public void record(int sales, int shortage, int current_area, int room_num){
-            String text = "Room : " + String.valueOf(room_num) + ", area :" + current_area + ", sales : " + String.valueOf(sales) + ", shortage : " + String.valueOf(shortage) + "\n";
-            try{
-                File file = new File("norma.csv");
-                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-                pw.write(text);
-                pw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-    }
-
 
 
     public void record(String text, String filename){
@@ -214,14 +199,19 @@ public class Simulator {
         //とりあえずid順にarrayに挿入する
         for (int i = 0; i < rooms.length; i++) {
             if(rooms[i].get_value(current_area) > 0){
-                array.add(rooms[i]);
-                System.out.println("id:" + rooms[i].getId() + ", value" + rooms[i].get_value(current_area) + ", stock:" + rooms[i].getGoods_list().get(0).getStock());
+
+                if(rooms[i].getArea_number() == current_area){
+                    array.add(rooms[i]);
+                }
+                //array.add(rooms[i]);
+
+                //System.out.println("id:" + rooms[i].getId() + ", value" + rooms[i].get_value(current_area) + ", stock:" + rooms[i].getGoods_list().get(0).getStock());
             }
 
-        }
+        }System.out.println(array.size());
 
         //価値順に並べる
-        /*for (int i = 0; i < array.size(); i++) {
+        for (int i = 0; i < array.size(); i++) {
             for (int j = 0; j < array.size(); j++) {
 
                 if(i < j){
@@ -235,12 +225,19 @@ public class Simulator {
             }
         }
 
+        for (int i = 0; i < array.size(); i++) {
+            System.out.println("id" + array.get(i).getId() + ", value:" + array.get(i).get_value(current_area));
+        }
+
         //並べたものから選択する
             //TODO:ここのアルゴリズム
         ArrayList<Room> route = new ArrayList<>();
         //とりあえず上から20個を選択
         if(array.size() > 20){
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < array.size()/*20*/; i++) {
+                if(i >= 20){
+                    counter++;
+                }
                 route.add(array.get(i));
             }
         }else{
@@ -248,26 +245,48 @@ public class Simulator {
                 route.add(array.get(i));
             }
         }
+        //route = array;
+        /*for (int i = 0; i < array.size(); i++) {
+            route.add(array.get(i));
+        }*/
 
-        //確認
-        System.out.println("----------start-------area " + current_area + "-------");
 
+        //選択肢終わったらid順に戻す
         for (int i = 0; i < route.size(); i++) {
-            System.out.println("id:" + route.get(i).getId() + ", value:" + route.get(i).get_value(current_area));
+            for (int j = 0; j < route.size(); j++) {
+
+                if(i < j){
+                    //iよりもjの価値の方が高ければ、jの部屋を前に変更
+                    if(route.get(i).getId() > array.get(j).getId()){
+                        Room tmp = route.get(i);
+                        route.set(i, route.get(j));
+                        route.set(j, tmp);
+                    }
+                }
+            }
         }
 
+        for (int i = 0; i < route.size(); i++) {
+            System.out.println("確認"+route.get(i).getId());
+        }
 
-        System.out.println("----------end--------------");
+        //確認
+
+        for (int i = 0; i < route.size(); i++) {
+            //System.out.println("id:" + route.get(i).getId() + ", value:" + route.get(i).get_value(current_area));
+        }
+
 
         //選択したものを登録する
         return route;
-        */
 
+/*
         for (int i = 0; i < rooms.length; i++) {
             System.out.println("id:" + rooms[i].getId() + ", value" + rooms[i].get_value(current_area) + ", stock:" + rooms[i].getGoods_list().get(0).getStock());
         }
-        return array;
+        return array;*/
     }
+    int counter = 0;
 }
 
 

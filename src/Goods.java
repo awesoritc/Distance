@@ -80,19 +80,19 @@ public class Goods {
             sales = consume;
             stock -= consume;
             sales_record.add(sales);
-            System.out.println("test" + 0);
+            //System.out.println("test" + 0);
         }else if(stock > 0){
-            System.out.println("consume: " + consume + ", stock:" + stock);
+            //System.out.println("consume: " + consume + ", stock:" + stock);
             shortage = consume - stock;
             sales = stock;
             stock = 0;
             sales_record.add(sales);
-            System.out.println("test" + 1);
+            //System.out.println("test" + 1);
         }else{
             shortage = consume;
             sales = 0;
             sales_record.add(sales);
-            System.out.println("test" + 2);
+            //System.out.println("test" + 2);
         }
         if(setting.test){
             System.out.println("sales : " + sales + ", shortage : " + shortage);
