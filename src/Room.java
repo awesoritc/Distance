@@ -5,8 +5,9 @@ import java.util.Random;
 public class Room {
 
     Setting setting;
+    private String simulatorType;
 
-    private int id;
+    private int roomId;
     private int x_pos;
     private int y_pos;
     private int area_number;
@@ -18,7 +19,7 @@ public class Room {
     private int[] distance_to_gravity;
 
 
-    Room(int area_number, int route_number, Setting setting, int id){
+    /*Room(int area_number, int route_number, Setting setting, int id){
 
         this.id = id;
         this.setting = setting;
@@ -29,9 +30,25 @@ public class Room {
         this.distance_to_gravity = new int[setting.number_of_areas];
 
         create_position(area_number);
+    }*/
 
-        //System.out.println("area : " + area_number + ", route : " + route_number + "(" + x_pos + "," + y_pos + ")");
+
+    Room(int roomId, int areaNumber, int x_pos, int y_pos, int item_number, String simulatorType){
+
+        this.setting = new Setting();
+        this.roomId = roomId;
+        this.area_number = areaNumber;
+        this.x_pos = x_pos;
+        this.y_pos = y_pos;
+
+        this.distance_to_gravity = new int[setting.number_of_areas];
+
+        register_goods(item_number);
     }
+
+
+
+
 
     public int getArea_number() {
         return area_number;
@@ -57,6 +74,29 @@ public class Room {
         return y_pos;
     }
 
+    public int[] getDistance_to_gravity() {
+        return distance_to_gravity;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public ArrayList<Goods> getGoods_list() {
+        return goods_list;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     public void setDistance_to_gravity(int[][] gravity_points) {
 
         for(int i = 0; i < setting.number_of_areas; i++){
@@ -80,17 +120,8 @@ public class Room {
         }
     }
 
-    public int[] getDistance_to_gravity() {
-        return distance_to_gravity;
-    }
 
-    public int getId() {
-        return id;
-    }
 
-    public ArrayList<Goods> getGoods_list() {
-        return goods_list;
-    }
 
     private void create_position(int area_number){
 
@@ -106,21 +137,20 @@ public class Room {
 
 
     public void register_goods(int goods_number){
-        Goods goods = new Goods(goods_number, setting);
+        Goods goods = new Goods(goods_number, roomId, setting, simulatorType);
         goods_list.add(goods);
     }
 
 
     //{shortage, sales}
-    public int[] do_consume(){
+    public int[] do_consume_room(){
 
         int[] record = new int[2];
 
         for (Goods aGoods_list : goods_list) {
-            int tmp[] = aGoods_list.consume();
+            int tmp[] = aGoods_list.consume_goods();
             record[0] += tmp[0];//shortage
             record[1] += tmp[1];//sales
-            //System.out.println("record" + record[1]);
         }
 
         return record;
@@ -128,14 +158,13 @@ public class Room {
 
 
     //補充時のストックの状態を返す
-    public ArrayList<Integer> replenishment_all(){
+    public ArrayList<Integer> replenishment_room(){
 
         ArrayList<Integer> hstock = new ArrayList<>();
         for (Goods aGoods_list : goods_list) {
-            //System.out.println("go");
             //goods_list.get(i).setStock(goods_list.get(i).getMax_item());
             hstock.add(aGoods_list.getStock());
-            aGoods_list.replenishment();
+            aGoods_list.replenishment_goods();
 
         }
         return hstock;
@@ -149,10 +178,6 @@ public class Room {
         int total_shortage = 0;
         for (Goods aGoods_list : goods_list) {
             total_shortage += aGoods_list.get_shortage_til_next(interval);
-        }
-
-        if(total_shortage > 0){
-            //System.out.println(getId() + "  ,   " + total_shortage);
         }
 
         return total_shortage;

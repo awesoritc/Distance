@@ -7,15 +7,18 @@ public class Goods {
     private double variance;
     private int stock;
     private int max_item;
+    private int roomId;
 
     private ArrayList<Integer> sales_record;
 
     private Setting setting;
+    private String simulatorType;
 
 
 
-    Goods(int goods_variation_num, Setting setting){
+    Goods(int goods_variation_num, int roomId, Setting setting, String simulatorType){
         this.setting = setting;
+        this.simulatorType = simulatorType;
 
         int[] variation = setting.getGoods_variation()[goods_variation_num];
 
@@ -23,6 +26,7 @@ public class Goods {
         this.variance = variation[1];
         this.stock = variation[2];
         this.max_item = variation[2];
+        this.roomId = roomId;
 
         sales_record = new ArrayList<>();
     }
@@ -63,8 +67,13 @@ public class Goods {
         return sales_record;
     }
 
+
+
+
+
+
     //{shortage, sales}
-    public int[] consume(){
+    public int[] consume_goods(){
         NormalDistribution nd = new NormalDistribution(average, variance);
         int consume = (int) Math.round(nd.random());
         if(consume < 0){
@@ -101,7 +110,7 @@ public class Goods {
         return new int[]{shortage, sales};
     }
 
-    public void replenishment(){
+    public void replenishment_goods(){
         stock = max_item;
     }
 
@@ -151,7 +160,9 @@ public class Goods {
             }
 
             return (double)Math.round(tmp / 5.0);
-        }else{
+        }/*else if(sales_record.size() > 5){
+
+        }*/else{
             return 0;
         }
 
