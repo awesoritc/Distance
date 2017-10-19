@@ -3,13 +3,14 @@ import java.util.ArrayList;
 
 public class Goods {
 
+    private int goodsnumber;
     private int average;
     private double variance;
     private int stock;
     private int max_item;
     private int roomId;
 
-    private ArrayList<Integer> sales_record;
+    private ArrayList<Integer> sales_record, shortage_record, consume_history;//売り上げ、欠品数、需用量を書き出し
 
     private Setting setting;
     private String simulatorType;
@@ -19,6 +20,7 @@ public class Goods {
     Goods(int goods_variation_num, int roomId, Setting setting, String simulatorType){
         this.setting = setting;
         this.simulatorType = simulatorType;
+        this.goodsnumber = goods_variation_num;
 
         int[] variation = setting.getGoods_variation()[goods_variation_num];
 
@@ -29,6 +31,8 @@ public class Goods {
         this.roomId = roomId;
 
         sales_record = new ArrayList<>();
+        shortage_record = new ArrayList<>();
+        consume_history = new ArrayList<>();
     }
 
     public int getAverage() {
@@ -67,10 +71,17 @@ public class Goods {
         return sales_record;
     }
 
+    public ArrayList<Integer> getShortage_record() {
+        return shortage_record;
+    }
 
+    public ArrayList<Integer> getConsume_history() {
+        return consume_history;
+    }
 
-
-
+    public int getGoodsnumber() {
+        return goodsnumber;
+    }
 
     //{shortage, sales}
     public int[] consume_goods(){
@@ -89,21 +100,23 @@ public class Goods {
             shortage = 0;
             sales = consume;
             stock -= consume;
-            sales_record.add(sales);
             //System.out.println("test" + 0);
         }else if(stock > 0){
             //System.out.println("consume: " + consume + ", stock:" + stock);
             shortage = consume - stock;
             sales = stock;
             stock = 0;
-            sales_record.add(sales);
             //System.out.println("test" + 1);
         }else{
             shortage = consume;
             sales = 0;
-            sales_record.add(sales);
             //System.out.println("test" + 2);
         }
+        sales_record.add(sales);
+        shortage_record.add(shortage);
+        consume_history.add(consume);
+
+
         if(setting.test){
             System.out.println("sales : " + sales + ", shortage : " + shortage);
         }

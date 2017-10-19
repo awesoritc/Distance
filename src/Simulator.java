@@ -76,9 +76,20 @@ public class Simulator {
             //ルート書き出し
             File file = new File(simulatorType + ".csv");
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+
+            //pw.write("roomid,day,current_area,room_area,stock,shortage_until_next,distance_to_current_area, value\n");
+
             for (int i = 0; i < replenishment_array.size(); i++) {
                 Room tm = replenishment_array.get(i);
-                pw.write("Day:" + day + ", Area:" + current_area + ", RoomID:" + tm.getRoomId() + ", Stock:" + tm.getGoods_list().get(0).getStock() + "\n");
+
+                pw.write("roomid:" + tm.getRoomId() + ", day:" + day + ", current_area:" + current_area + ", room_area:" + tm.getArea_number() +
+                        ", stock:" + tm.getGoods_list().get(0).getStock() + ", shortage_until_next:" + tm.get_room_shortage_til_next(current_area) +
+                        ", distance_to_current:" + tm.getDistance_to_gravity()[current_area] + ", value:" + tm.get_value(current_area) + "\n");
+
+
+                /*pw.write(tm.getRoomId() + "," + day + "," + current_area + "," + tm.getArea_number() +
+                        "," + tm.getGoods_list().get(0).getStock() + "," + tm.get_room_shortage_til_next(current_area) +
+                        "," + tm.getDistance_to_gravity()[current_area] + "," + tm.get_value(current_area));*/
             }
             pw.write("\n");
 
@@ -216,13 +227,23 @@ public class Simulator {
 
 
 
-            //とりあえずid順にarrayに挿入する
+            //とりあえずvalueが0でない部屋をid順にarrayに挿入する
             for (int i = 0; i < rooms.length; i++) {
                 if(rooms[i].get_value(current_area) > 0){
 
                     array.add(rooms[i]);
                 }
 
+            }
+
+            if(array.size() == 0){
+
+                for (int i = 0; i < setting.number_of_rooms; i++) {
+                    if(rooms[i].getArea_number() == current_area){
+                        array.add(rooms[i]);
+                    }
+                }
+                return array;
             }
 
             //価値順に並べる
