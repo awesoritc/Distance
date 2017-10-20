@@ -51,6 +51,29 @@ public class Simulator {
             //rooms[i].register_goods(2);
             rooms[i].register_goods(new Random().nextInt(3));
         }
+
+
+
+        //ファイルの項目を追加
+        try{
+            File file = new File(simulatorType + ".csv");
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+
+            pw.write("roomid,day,current_area,room_area,stock,shortage_until_next,distance_to_current_area,value\n");
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        try{
+            File file = new File("value_" + simulatorType + ".csv");
+            FileWriter writer = new FileWriter(file);
+            writer.write("day" + ",current" + ",roomID" + ",value\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -63,7 +86,7 @@ public class Simulator {
 
         //TODO:ここで補充するリストを作る
 
-        ArrayList<Room> array = route(rooms, current_area);//routeSelector.choose_rooms(current_area);//routeSelector.choose_rooms_to_go(current_area);
+        ArrayList<Room> array = route(rooms, current_area, day);//routeSelector.choose_rooms(current_area);//routeSelector.choose_rooms_to_go(current_area);
 
         replenishment_array = array;//sort_in_order_roomId(array);
 
@@ -77,21 +100,19 @@ public class Simulator {
             File file = new File(simulatorType + ".csv");
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
 
-            //pw.write("roomid,day,current_area,room_area,stock,shortage_until_next,distance_to_current_area, value\n");
-
             for (int i = 0; i < replenishment_array.size(); i++) {
                 Room tm = replenishment_array.get(i);
 
-                pw.write("roomid:" + tm.getRoomId() + ", day:" + day + ", current_area:" + current_area + ", room_area:" + tm.getArea_number() +
+                /*pw.write("roomid:" + tm.getRoomId() + ", day:" + day + ", current_area:" + current_area + ", room_area:" + tm.getArea_number() +
                         ", stock:" + tm.getGoods_list().get(0).getStock() + ", shortage_until_next:" + tm.get_room_shortage_til_next(current_area) +
-                        ", distance_to_current:" + tm.getDistance_to_gravity()[current_area] + ", value:" + tm.get_value(current_area) + "\n");
+                        ", distance_to_current:" + tm.getDistance_to_gravity()[current_area] + ", value:" + tm.get_value(current_area) + "\n");*/
 
 
-                /*pw.write(tm.getRoomId() + "," + day + "," + current_area + "," + tm.getArea_number() +
+                pw.write(tm.getRoomId() + "," + day + "," + current_area + "," + tm.getArea_number() +
                         "," + tm.getGoods_list().get(0).getStock() + "," + tm.get_room_shortage_til_next(current_area) +
-                        "," + tm.getDistance_to_gravity()[current_area] + "," + tm.get_value(current_area));*/
+                        "," + tm.getDistance_to_gravity()[current_area] + "," + tm.get_value(current_area) + "\n");
             }
-            pw.write("\n");
+            //pw.write("\n");
 
             pw.close();
         } catch (IOException e) {
@@ -201,7 +222,7 @@ public class Simulator {
 
     int counter = 0;
     int counterb = 0;
-    public ArrayList<Room> route(Room[] rooms, int current_area){
+    public ArrayList<Room> route(Room[] rooms, int current_area, int day){
 
 
         ArrayList<Room> array = new ArrayList<>();
@@ -210,6 +231,18 @@ public class Simulator {
         if(route_choice == 0){
             //決め打ち
 
+
+            for (int i = 0; i < rooms.length; i++) {
+                try{
+                    File file = new File("value_" + simulatorType + ".csv");
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+                    //pw.write("day:" + day + ", current:" + current_area + ", roomID:" + i + ", value:" + rooms[i].get_value(current_area) + "\n");
+                    pw.write( day + "," + current_area + "," + i + "," + rooms[i].get_value(current_area) + "\n");
+                    pw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             //ここからエリア固定
         for (int i = 0; i < rooms.length; i++) {
@@ -224,6 +257,19 @@ public class Simulator {
 
         }else if(route_choice == 1){
             //動的に作成
+
+
+            for (int i = 0; i < rooms.length; i++) {
+                try{
+                    File file = new File("value_" + simulatorType + ".csv");
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+                    //pw.write("day:" + day + ", current:" + current_area + ", roomID:" + i + ", value:" + rooms[i].get_value(current_area) + "\n");
+                    pw.write( day + "," + current_area + "," + i + "," + rooms[i].get_value(current_area) + "\n");
+                    pw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
 
 

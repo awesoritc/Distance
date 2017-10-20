@@ -11,6 +11,7 @@ public class Goods {
     private int roomId;
 
     private ArrayList<Integer> sales_record, shortage_record, consume_history;//売り上げ、欠品数、需用量を書き出し
+    private ArrayList<Integer> expect_history, value_history;
 
     private Setting setting;
     private String simulatorType;
@@ -33,6 +34,7 @@ public class Goods {
         sales_record = new ArrayList<>();
         shortage_record = new ArrayList<>();
         consume_history = new ArrayList<>();
+        expect_history = new ArrayList<>();
     }
 
     public int getAverage() {
@@ -85,6 +87,8 @@ public class Goods {
 
     //{shortage, sales}
     public int[] consume_goods(){
+
+
         NormalDistribution nd = new NormalDistribution(average, variance);
         int consume = (int) Math.round(nd.random());
         if(consume < 0){
