@@ -10,7 +10,8 @@ public class Executor {
         String TYPE_STATIC = "static";
         String TYPE_DYNAMIC = "dynamic";
 
-        String filename = "rooms1.csv";
+        //String filename = "rooms1.csv";
+        String filename = "rooms2.csv";
 
 
         //TODO:これをそのまま両方に渡すのではなくて、ファイルから読み込んだ値を利用して2つのRoom配列を新規で別々に作る必要がある
@@ -54,43 +55,43 @@ public class Executor {
         }
 
 
-        Room[] rooms1 = new Room[setting.number_of_rooms];
-        Room[] rooms2 = new Room[setting.number_of_rooms];
+        Room[] rooms_static = new Room[setting.number_of_rooms];
+        Room[] rooms_dynamic = new Room[setting.number_of_rooms];
 
-        for (int i = 0; i < rooms1.length; i++) {
+        for (int i = 0; i < rooms_static.length; i++) {
 
             //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、登録する商品番号)
-            rooms1[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_STATIC);
-            rooms2[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_DYNAMIC);
+            rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_STATIC);
+            rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_DYNAMIC);
         }
 
         //0が決め打ち, 1が動的
-        Simulator simulator1 = new Simulator(setting, rooms1, 0, TYPE_STATIC);
-        Simulator simulator2 = new Simulator(setting, rooms2, 1, TYPE_DYNAMIC);
+        Simulator simulator_static = new Simulator(setting, rooms_static, 0, TYPE_STATIC);
+        Simulator simulator_dynamic = new Simulator(setting, rooms_dynamic, 1, TYPE_DYNAMIC);
 
         for(int i = 0; i < setting.getDays(); i++){
 
 
             int area = i%5;
 
-            simulator1.create_route(area, i);
-            simulator1.do_consume_simulator(i);
-            simulator1.do_replenishment_simulator(i);
-            simulator2.create_route(area, i);
-            simulator2.do_consume_simulator(i);
-            simulator2.do_replenishment_simulator(i);
+            simulator_static.create_route(area, i);
+            simulator_static.do_consume_simulator(i);
+            simulator_static.do_replenishment_simulator(i);
+            simulator_dynamic.create_route(area, i);
+            simulator_dynamic.do_consume_simulator(i);
+            simulator_dynamic.do_replenishment_simulator(i);
 
         }
 
-        System.out.println("time1:" + simulator1.getTotal_time());
-        System.out.println("time2:" + simulator2.getTotal_time());
+        System.out.println("time_static:" + simulator_static.getTotal_time());
+        System.out.println("time_dynamic:" + simulator_dynamic.getTotal_time());
         System.out.println();
-        System.out.println("sales1:" + simulator1.get_sales());
-        System.out.println("sales2:" + simulator2.get_sales());
-        System.out.println("shortage1:" + simulator1.get_shortage());
-        System.out.println("shortage2:" + simulator2.get_shortage());
+        System.out.println("sales_static:" + simulator_static.get_sales());
+        System.out.println("sales_dynamic:" + simulator_dynamic.get_sales());
+        System.out.println("shortage_static:" + simulator_static.get_shortage());
+        System.out.println("shortage_dynamic:" + simulator_dynamic.get_shortage());
         System.out.println();
-        System.out.println(simulator2.counterb);
+        System.out.println(simulator_dynamic.counterb);
 
 
 
@@ -101,10 +102,10 @@ public class Executor {
 
             //pw.write("roomid,day,sales,shortage,consume\n");
 
-            for (int i = 0; i < rooms1.length; i++) {
-                ArrayList<Integer> sales_array = rooms1[i].getGoods_list().get(0).getSales_record();
-                ArrayList<Integer> shortage_array = rooms1[i].getGoods_list().get(0).getShortage_record();
-                ArrayList<Integer> consume_array = rooms1[i].getGoods_list().get(0).getConsume_history();
+            for (int i = 0; i < rooms_static.length; i++) {
+                ArrayList<Integer> sales_array = rooms_static[i].getGoods_list().get(0).getSales_record();
+                ArrayList<Integer> shortage_array = rooms_static[i].getGoods_list().get(0).getShortage_record();
+                ArrayList<Integer> consume_array = rooms_static[i].getGoods_list().get(0).getConsume_history();
                 for (int j = 0; j < sales_array.size(); j++) {
 
 
@@ -135,10 +136,10 @@ public class Executor {
 
             //pw.write("roomid,day,sales,shortage,consume\n");
 
-            for (int i = 0; i < rooms2.length; i++) {
-                ArrayList<Integer> sales_array = rooms2[i].getGoods_list().get(0).getSales_record();
-                ArrayList<Integer> shortage_array = rooms2[i].getGoods_list().get(0).getShortage_record();
-                ArrayList<Integer> consume_array = rooms2[i].getGoods_list().get(0).getConsume_history();
+            for (int i = 0; i < rooms_dynamic.length; i++) {
+                ArrayList<Integer> sales_array = rooms_dynamic[i].getGoods_list().get(0).getSales_record();
+                ArrayList<Integer> shortage_array = rooms_dynamic[i].getGoods_list().get(0).getShortage_record();
+                ArrayList<Integer> consume_array = rooms_dynamic[i].getGoods_list().get(0).getConsume_history();
                 for (int j = 0; j < sales_array.size(); j++) {
 
 
@@ -161,6 +162,31 @@ public class Executor {
         }
 
 
+
+
+        //valueが0でない部屋の数を出力
+        try{
+            ArrayList<Integer> tmp = simulator_static.value_rooms;
+            File file = new File("value_room_num_static.csv");
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.write("day,count");
+            for (int i = 0; i < tmp.size(); i++) {
+                pw.write(i + "," + tmp.get(i) + "\n");
+            }
+            pw.close();
+
+
+            tmp = simulator_dynamic.value_rooms;
+            file = new File("value_room_num_dynamic.csv");
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.write("day,count");
+            for (int i = 0; i < tmp.size(); i++) {
+                pw.write(i + "," + tmp.get(i) + "\n");
+            }
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }

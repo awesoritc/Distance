@@ -222,6 +222,7 @@ public class Simulator {
 
     int counter = 0;
     int counterb = 0;
+    ArrayList<Integer> value_rooms = new ArrayList<>();
     public ArrayList<Room> route(Room[] rooms, int current_area, int day){
 
 
@@ -245,11 +246,17 @@ public class Simulator {
             }
 
             //ここからエリア固定
+            int val_counter = 0;
         for (int i = 0; i < rooms.length; i++) {
             if(rooms[i].getArea_number() == current_area){
                 array.add(rooms[i]);
             }
+
+            if(rooms[i].get_value(current_area) > 0){
+                val_counter++;
+            }
         }
+        value_rooms.add(val_counter);
         //ここまで
 
         return array;
@@ -274,13 +281,16 @@ public class Simulator {
 
 
             //とりあえずvalueが0でない部屋をid順にarrayに挿入する
+            int val_counter = 0;
             for (int i = 0; i < rooms.length; i++) {
                 if(rooms[i].get_value(current_area) > 0){
 
                     array.add(rooms[i]);
-                }
 
+                    val_counter++;
+                }
             }
+            value_rooms.add(val_counter);
 
             if(array.size() == 0){
 
