@@ -104,17 +104,13 @@ public class Goods {
             shortage = 0;
             sales = consume;
             stock -= consume;
-            //System.out.println("test" + 0);
         }else if(stock > 0){
-            //System.out.println("consume: " + consume + ", stock:" + stock);
             shortage = consume - stock;
             sales = stock;
             stock = 0;
-            //System.out.println("test" + 1);
         }else{
             shortage = consume;
             sales = 0;
-            //System.out.println("test" + 2);
         }
         sales_record.add(sales);
         shortage_record.add(shortage);
@@ -146,15 +142,15 @@ public class Goods {
 
 
         int consume_til_next = (tmp / setting.getMoving_average_interval()) * interval;
-        System.out.println("expect:" + consume_til_next + ", stock:" + stock);
+        //System.out.println("expect:" + consume_til_next + ", stock:" + stock);
         if(setting.test){
             String s = "";
             for(int i = 0; i < setting.getMoving_average_interval(); i++){
                 s += String.valueOf(sales_record.get(sales_record.size()-(i+1))) + " ";
             }
 
-            System.out.println(s + " interval : " + interval);
-            System.out.println("consume_til_next : " + consume_til_next);
+            //System.out.println(s + " interval : " + interval);
+            //System.out.println("consume_til_next : " + consume_til_next);
         }
 
 

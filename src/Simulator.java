@@ -48,8 +48,8 @@ public class Simulator {
         //Goodsを登録(gravityも)
         for(int i = 0; i < setting.number_of_rooms; i++){
             rooms[i].setDistance_to_gravity(gravity_points);
-            //rooms[i].register_goods(2);
-            rooms[i].register_goods(new Random().nextInt(3));
+            //rooms[i].register_goods(1);
+            //rooms[i].register_goods(new Random().nextInt(3));
         }
 
 
@@ -127,7 +127,7 @@ public class Simulator {
     public void do_replenishment_simulator(int day){
         //順番が上位のものだけ補充
 
-        System.out.println();
+        //System.out.println();
         for(int i = 0; i < replenishment_array.size(); i++){
             ArrayList<Integer> hstock = rooms[replenishment_array.get(i).getRoomId()].replenishment_room();
         }
@@ -317,9 +317,9 @@ public class Simulator {
                 }
             }
 
-            for (int i = 0; i < array.size(); i++) {
+            /*for (int i = 0; i < array.size(); i++) {
                 System.out.println("id" + array.get(i).getRoomId() + ", value:" + array.get(i).get_value(current_area));
-            }
+            }*/
 
             //並べたものから選択する
             //TODO:ここのアルゴリズム

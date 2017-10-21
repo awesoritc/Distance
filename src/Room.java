@@ -165,7 +165,6 @@ public class Room {
             //goods_list.get(i).setStock(goods_list.get(i).getMax_item());
             hstock.add(aGoods_list.getStock());
             aGoods_list.replenishment_goods();
-
         }
         return hstock;
     }
@@ -201,7 +200,6 @@ public class Room {
         }
 
         //System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
-
 
         return (double)(get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
     }

@@ -10,8 +10,8 @@ public class Executor {
         String TYPE_STATIC = "static";
         String TYPE_DYNAMIC = "dynamic";
 
-        //String filename = "rooms1.csv";
-        String filename = "rooms2.csv";
+        String filename = "rooms1.csv";
+        //String filename = "rooms2.csv";
 
 
         //TODO:これをそのまま両方に渡すのではなくて、ファイルから読み込んだ値を利用して2つのRoom配列を新規で別々に作る必要がある
@@ -61,7 +61,7 @@ public class Executor {
         for (int i = 0; i < rooms_static.length; i++) {
 
             //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、登録する商品番号)
-            rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_STATIC);
+            rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_STATIC);
             rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_DYNAMIC);
         }
 
@@ -77,6 +77,7 @@ public class Executor {
             simulator_static.create_route(area, i);
             simulator_static.do_consume_simulator(i);
             simulator_static.do_replenishment_simulator(i);
+
             simulator_dynamic.create_route(area, i);
             simulator_dynamic.do_consume_simulator(i);
             simulator_dynamic.do_replenishment_simulator(i);
@@ -92,6 +93,7 @@ public class Executor {
         System.out.println("shortage_dynamic:" + simulator_dynamic.get_shortage());
         System.out.println();
         System.out.println(simulator_dynamic.counterb);
+
 
 
 
