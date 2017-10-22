@@ -79,7 +79,7 @@ public class Util {
                         int areanumber = i;
                         int[] pos = Util.create_position(i);
                         Random rand = new Random();
-                        int goodsnumber = rand.nextInt(3);
+                        int goodsnumber = rand.nextInt(setting.goods_variation.length);
 
 
                         pw.write(String.valueOf(roomid) + "," + String.valueOf(areanumber) + "," +
@@ -153,5 +153,17 @@ public class Util {
 
         //ここまで
 
+    }
+
+
+    public static void delete_file(String filename){
+        try {
+            File file_static = new File(filename);
+            if (file_static.exists()) {
+                new FileWriter(file_static).write("");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

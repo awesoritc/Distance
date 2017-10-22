@@ -10,8 +10,8 @@ public class Executor {
         String TYPE_STATIC = "static";
         String TYPE_DYNAMIC = "dynamic";
 
-        String filename = "rooms1.csv";
-        //String filename = "rooms2.csv";
+        //String filename = "rooms1.csv";
+        String filename = "rooms2.csv";
 
 
         //TODO:これをそのまま両方に渡すのではなくて、ファイルから読み込んだ値を利用して2つのRoom配列を新規で別々に作る必要がある
@@ -74,9 +74,9 @@ public class Executor {
 
             int area = i%5;
 
-            simulator_static.create_route(area, i);
+            /*simulator_static.create_route(area, i);
             simulator_static.do_consume_simulator(i);
-            simulator_static.do_replenishment_simulator(i);
+            simulator_static.do_replenishment_simulator(i);*/
 
             simulator_dynamic.create_route(area, i);
             simulator_dynamic.do_consume_simulator(i);
@@ -142,13 +142,15 @@ public class Executor {
                 ArrayList<Integer> sales_array = rooms_dynamic[i].getGoods_list().get(0).getSales_record();
                 ArrayList<Integer> shortage_array = rooms_dynamic[i].getGoods_list().get(0).getShortage_record();
                 ArrayList<Integer> consume_array = rooms_dynamic[i].getGoods_list().get(0).getConsume_history();
+                ArrayList<Integer> stock_before_array = rooms_dynamic[i].getGoods_list().get(0).getStock_history_before();
+                ArrayList<Integer> stock_after_array = rooms_dynamic[i].getGoods_list().get(0).getStock_history_after();
                 for (int j = 0; j < sales_array.size(); j++) {
 
 
 
                     pw.write("roomID:" + String.valueOf(i) + ", day:" + String.valueOf(j) + ", sales:" +
-                                String.valueOf(sales_array.get(j)) + ", shortage" + String.valueOf(shortage_array.get(j)) +
-                                ", consume:" + String.valueOf(consume_array.get(j)) + "\n");
+                                String.valueOf(sales_array.get(j)) + ", shortage:" + String.valueOf(shortage_array.get(j)) +
+                                ", consume:" + String.valueOf(consume_array.get(j)) + ", stock_before:" + String.valueOf(stock_before_array.get(j)) + "\n");
 
                     /*pw.write( String.valueOf(i) + "," + String.valueOf(j) + "," +
                             String.valueOf(sales_array.get(j)) + "," + String.valueOf(shortage_array.get(j)) +
@@ -167,11 +169,14 @@ public class Executor {
 
 
         //valueが0でない部屋の数を出力
-        try{
+        /*try{
             ArrayList<Integer> tmp = simulator_static.value_rooms;
             File file = new File("value_room_num_static.csv");
+            FileWriter el = new FileWriter(file);
+            el.write("");
+            el.close();
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-            pw.write("day,count");
+            pw.write("day,count\n");
             for (int i = 0; i < tmp.size(); i++) {
                 pw.write(i + "," + tmp.get(i) + "\n");
             }
@@ -180,15 +185,18 @@ public class Executor {
 
             tmp = simulator_dynamic.value_rooms;
             file = new File("value_room_num_dynamic.csv");
+            FileWriter ela = new FileWriter(file);
+            ela.write("");
+            ela.close();
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-            pw.write("day,count");
+            pw.write("day,count\n");
             for (int i = 0; i < tmp.size(); i++) {
                 pw.write(i + "," + tmp.get(i) + "\n");
             }
             pw.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
     }

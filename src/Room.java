@@ -12,6 +12,7 @@ public class Room {
     private int y_pos;
     private int area_number;
     private int route_number;
+    private int last_replenishment;
 
     private ArrayList<Goods> goods_list = new ArrayList<>();
 
@@ -42,6 +43,7 @@ public class Room {
         this.y_pos = y_pos;
 
         this.distance_to_gravity = new int[setting.number_of_areas];
+        this.last_replenishment = 0;
 
         register_goods(item_number);
     }
@@ -82,6 +84,10 @@ public class Room {
         return roomId;
     }
 
+    public int getLast_replenishment() {
+        return last_replenishment;
+    }
+
     public ArrayList<Goods> getGoods_list() {
         return goods_list;
     }
@@ -118,6 +124,9 @@ public class Room {
             }
             this.distance_to_gravity[i] = distance;
         }
+
+        //Util.file_write("ID:" + roomId + ",(" + x_pos + "," + y_pos + ")" + "," + distance_to_gravity[0] + "," + distance_to_gravity[1] +
+        //        "," + distance_to_gravity[2] + "," + distance_to_gravity[3] + "," + distance_to_gravity[4] + "\n", "distance.csv");
     }
 
 
@@ -158,7 +167,10 @@ public class Room {
 
 
     //補充時のストックの状態を返す
-    public ArrayList<Integer> replenishment_room(){
+    public ArrayList<Integer> replenishment_room(int day){
+
+
+        Util.file_write("day:" + day + ", area_number:" + day%5 + ", roomID:" + roomId + ", stock:" + getGoods_list().get(0).getStock() + "\n", "replenishment_dy");
 
         ArrayList<Integer> hstock = new ArrayList<>();
         for (Goods aGoods_list : goods_list) {
@@ -166,6 +178,9 @@ public class Room {
             hstock.add(aGoods_list.getStock());
             aGoods_list.replenishment_goods();
         }
+
+        last_replenishment = day;
+
         return hstock;
     }
 
@@ -176,7 +191,7 @@ public class Room {
 
         int total_shortage = 0;
         for (Goods aGoods_list : goods_list) {
-            total_shortage += aGoods_list.get_shortage_til_next(interval);
+            total_shortage += aGoods_list.getShortage(interval);//aGoods_list.get_shortage_til_next(interval);
         }
 
         return total_shortage;
@@ -187,19 +202,11 @@ public class Room {
     //TODO:get_valueの修正
     public double get_value(int current_area){
 
-        //double interval = Util.get_interval(current_area, area_number, setting);
-        /*if(getArea_number() > current_area){
-            interval = area_number - current_area;
-        }else{
-            interval = area_number + setting.getNumber_of_areas() - current_area + 1;
-        }*/
 
-        //System.out.println("expect : " + get_room_shortage_til_next(interval));
-        if(distance_to_gravity[current_area] == 0){
+        /*if(distance_to_gravity[current_area] == 0){
+            System.out.println("test0");
             return (double)get_room_shortage_til_next(current_area);
-        }
-
-        //System.out.println("distance:" + distance_to_gravity[current_area] + ", shortage:" + get_room_shortage_til_next(current_area) + " , value:" + (double)(get_room_shortage_til_next(current_area)/(double)distance_to_gravity[current_area]));
+        }*/
 
         return (double)(get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
     }

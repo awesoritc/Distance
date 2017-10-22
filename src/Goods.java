@@ -10,7 +10,7 @@ public class Goods {
     private int max_item;
     private int roomId;
 
-    private ArrayList<Integer> sales_record, shortage_record, consume_history;//売り上げ、欠品数、需用量を書き出し
+    private ArrayList<Integer> sales_record, shortage_record, consume_history, stock_history_before, stock_history_after;//売り上げ、欠品数、需用量を書き出し
     private ArrayList<Integer> expect_history, value_history;
 
     private Setting setting;
@@ -35,6 +35,8 @@ public class Goods {
         shortage_record = new ArrayList<>();
         consume_history = new ArrayList<>();
         expect_history = new ArrayList<>();
+        stock_history_before = new ArrayList<>();
+        stock_history_after = new ArrayList<>();
     }
 
     public int getAverage() {
@@ -81,12 +83,22 @@ public class Goods {
         return consume_history;
     }
 
+    public ArrayList<Integer> getStock_history_before() {
+        return stock_history_before;
+    }
+
+    public ArrayList<Integer> getStock_history_after() {
+        return stock_history_after;
+    }
+
     public int getGoodsnumber() {
         return goodsnumber;
     }
 
     //{shortage, sales}
     public int[] consume_goods(){
+
+        stock_history_before.add(stock);
 
 
         NormalDistribution nd = new NormalDistribution(average, variance);
@@ -115,6 +127,7 @@ public class Goods {
         sales_record.add(sales);
         shortage_record.add(shortage);
         consume_history.add(consume);
+        stock_history_after.add(stock);
 
 
         if(setting.test){
@@ -142,20 +155,15 @@ public class Goods {
 
 
         int consume_til_next = (tmp / setting.getMoving_average_interval()) * interval;
-        //System.out.println("expect:" + consume_til_next + ", stock:" + stock);
         if(setting.test){
             String s = "";
             for(int i = 0; i < setting.getMoving_average_interval(); i++){
                 s += String.valueOf(sales_record.get(sales_record.size()-(i+1))) + " ";
             }
-
-            //System.out.println(s + " interval : " + interval);
-            //System.out.println("consume_til_next : " + consume_til_next);
         }
 
 
         if(consume_til_next > stock){
-
             return consume_til_next - stock;
         }
 
@@ -179,5 +187,35 @@ public class Goods {
             return 0;
         }
 
+    }
+
+
+
+    public int getShortage(int interval){
+        //5日間の売り上げの移動平均で消費量を予測
+
+        int tmp = 0;
+        if(sales_record.size() > setting.getMoving_average_interval() * 5){
+            //25以上売り上げデータがある時
+            for(int i = 0; i < setting.getMoving_average_interval() * 5; i++){
+                tmp += sales_record.get(sales_record.size()-(i+1));
+            }
+
+            int cons = Math.round((int)((double)Math.round(tmp / (setting.getMoving_average_interval() * 5)) * interval));
+            //return ((double)Math.round(tmp / (setting.getMoving_average_interval() * 5)) * interval);
+
+            if(cons > stock){
+                return cons - stock;
+            }else{
+                return 0;
+            }
+
+        }else if(sales_record.size() > 5){
+            //5以上売り上げデータがある時
+            return get_shortage_til_next(interval);
+        }else{
+            //売り上げデータがないとき
+            return 0;
+        }
     }
 }

@@ -12,6 +12,8 @@ public class Simulator {
 
     private int num_rooms = 100;
 
+    private int longest_non_replenishment = 5*5;
+
     private Room[] rooms = new Room[num_rooms];
 
     private int total_time = 0;
@@ -129,7 +131,7 @@ public class Simulator {
 
         //System.out.println();
         for(int i = 0; i < replenishment_array.size(); i++){
-            ArrayList<Integer> hstock = rooms[replenishment_array.get(i).getRoomId()].replenishment_room();
+            ArrayList<Integer> hstock = rooms[replenishment_array.get(i).getRoomId()].replenishment_room(day);
         }
 
     }
@@ -223,27 +225,30 @@ public class Simulator {
     int counter = 0;
     int counterb = 0;
     ArrayList<Integer> value_rooms = new ArrayList<>();
+
     public ArrayList<Room> route(Room[] rooms, int current_area, int day){
 
 
         ArrayList<Room> array = new ArrayList<>();
         ArrayList<Room> route = new ArrayList<>();
 
+
+        //roomのvalueを表示
+        for (int i = 0; i < rooms.length; i++) {
+            try{
+                File file = new File("value_" + simulatorType + ".csv");
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+                //pw.write("day:" + day + ", current:" + current_area + ", roomID:" + i + ", value:" + rooms[i].get_value(current_area) + "\n");
+                pw.write( day + "," + current_area + "," + i + "," + rooms[i].get_value(current_area) + "\n");
+                pw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         if(route_choice == 0){
             //決め打ち
 
-
-            for (int i = 0; i < rooms.length; i++) {
-                try{
-                    File file = new File("value_" + simulatorType + ".csv");
-                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-                    //pw.write("day:" + day + ", current:" + current_area + ", roomID:" + i + ", value:" + rooms[i].get_value(current_area) + "\n");
-                    pw.write( day + "," + current_area + "," + i + "," + rooms[i].get_value(current_area) + "\n");
-                    pw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
             //ここからエリア固定
             int val_counter = 0;
@@ -266,19 +271,6 @@ public class Simulator {
             //動的に作成
 
 
-            for (int i = 0; i < rooms.length; i++) {
-                try{
-                    File file = new File("value_" + simulatorType + ".csv");
-                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-                    //pw.write("day:" + day + ", current:" + current_area + ", roomID:" + i + ", value:" + rooms[i].get_value(current_area) + "\n");
-                    pw.write( day + "," + current_area + "," + i + "," + rooms[i].get_value(current_area) + "\n");
-                    pw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
 
             //とりあえずvalueが0でない部屋をid順にarrayに挿入する
             int val_counter = 0;
@@ -288,10 +280,18 @@ public class Simulator {
                     array.add(rooms[i]);
 
                     val_counter++;
+                }else{
+                    //valueが0でも期間をすぎていれば追加
+                    if((day - rooms[i].getLast_replenishment()) > longest_non_replenishment){
+                        array.add(rooms[i]);
+                    }
                 }
             }
             value_rooms.add(val_counter);
 
+            //TODO:ここでvalueが0でもしばらく補充されていない部屋は補充する
+
+            //valueが0以上のものが存在しなかった場合、current_areaの部屋を補充
             if(array.size() == 0){
 
                 for (int i = 0; i < setting.number_of_rooms; i++) {
@@ -301,6 +301,7 @@ public class Simulator {
                 }
                 return array;
             }
+
 
             //価値順に並べる
             for (int i = 0; i < array.size(); i++) {
@@ -324,6 +325,46 @@ public class Simulator {
             //並べたものから選択する
             //TODO:ここのアルゴリズム
 
+            //まず期間をすぎているものを追加
+            if(array.size() > 20){
+                for (int i = 0; i < array.size(); i++) {
+                    if((day - array.get(i).getLast_replenishment()) > longest_non_replenishment){
+                        route.add(array.get(i));
+                        array.remove(i);
+                    }
+                }
+
+                if(route.size() > 20){
+                    //期間をすぎているものが20こ以上ある時
+
+                    //現在のエリアから近いもの順に並べrouteにする
+
+                    for (int i = 0; i < route.size(); i++) {
+                        for (int j = 0; j < route.size(); j++) {
+                            if(i < j){
+                                if(route.get(i).getDistance_to_gravity()[current_area] > route.get(j).getDistance_to_gravity()[current_area]){
+                                    Room tmp = route.get(i);
+                                    route.set(i, route.get(i));
+                                    route.set(j, tmp);
+                                }
+                            }
+                        }
+                    }
+
+                    while(route.size() > 20){
+                        route.remove(route.size()-1);
+                    }
+                }else{
+
+                    while(route.size() < 20){
+                        route.add(array.get(0));
+                        array.remove(0);
+                    }
+                }
+            }
+
+
+            /*
             //とりあえず上から20個を選択
             if(array.size() > 20){
                 for (int i = 0; i < 20; i++) {
@@ -338,13 +379,15 @@ public class Simulator {
                 }
             }
 
+            */
+
             //選択し終わったらid順に戻す
             for (int i = 0; i < route.size(); i++) {
                 for (int j = 0; j < route.size(); j++) {
 
                     if(i < j){
                         //iよりもjの価値の方が高ければ、jの部屋を前に変更
-                        if(route.get(i).getRoomId() > array.get(j).getRoomId()){
+                        if(route.get(i).getRoomId() > route.get(j).getRoomId()){
                             Room tmp = route.get(i);
                             route.set(i, route.get(j));
                             route.set(j, tmp);
