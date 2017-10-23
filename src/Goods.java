@@ -37,6 +37,29 @@ public class Goods {
         stock_history_after = new ArrayList<>();
     }
 
+
+
+    //adjust用
+    Goods(int goods_variation_num, int roomId, Setting setting, String simulatorType, boolean adjust){
+        this.setting = setting;
+        this.simulatorType = simulatorType;
+        this.goodsnumber = goods_variation_num;
+
+        int[] variation = setting.g_variation_new[goods_variation_num];
+
+        this.average = variation[0];
+        this.variance = variation[1];
+        this.stock = variation[2];
+        this.max_item = variation[2];
+        this.roomId = roomId;
+
+        sales_record = new ArrayList<>();
+        shortage_record = new ArrayList<>();
+        consume_history = new ArrayList<>();
+        stock_history_before = new ArrayList<>();
+        stock_history_after = new ArrayList<>();
+    }
+
     public int getAverage() {
         return average;
     }
@@ -133,6 +156,54 @@ public class Goods {
         }
         return new int[]{shortage, sales};
     }
+
+
+
+
+
+    //adjust用
+    public int[] consume_goods(int roomType){
+
+        stock_history_before.add(stock);
+
+
+        double ratio = setting.demand_mul[roomType];
+
+        NormalDistribution nd = new NormalDistribution(average, variance);
+        int consume = (int) (Math.round(nd.random()) * ratio);
+        if(consume < 0){
+            consume = 0;
+        }
+        if(setting.test){
+            System.out.println("consume : " + consume);
+        }
+        int shortage = 0;
+        int sales = 0;
+
+        if(stock > consume){
+            shortage = 0;
+            sales = consume;
+            stock -= consume;
+        }else if(stock > 0){
+            shortage = consume - stock;
+            sales = stock;
+            stock = 0;
+        }else{
+            shortage = consume;
+            sales = 0;
+        }
+        sales_record.add(sales);
+        shortage_record.add(shortage);
+        consume_history.add(consume);
+        stock_history_after.add(stock);
+
+
+        if(setting.test){
+            System.out.println("sales : " + sales + ", shortage : " + shortage);
+        }
+        return new int[]{shortage, sales};
+    }
+
 
     public void replenishment_goods(){
         stock = max_item;

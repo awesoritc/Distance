@@ -48,13 +48,14 @@ public class Room {
         this.last_replenishment = 0;
 
 
-        //this.room_max = setting.max_room;
+        this.room_max = setting.max_room[roomType];
 
         register_goods(item_number);
     }
 
 
 
+    int roomType = 100;
 
     Room(int roomId, int areaNumber, int x_pos, int y_pos, int roomType, String simulatorType, boolean adjust){
 
@@ -69,6 +70,7 @@ public class Room {
 
 
         //this.room_max = setting.max_room;
+        this.roomType = roomType;
     }
 
 
@@ -167,21 +169,48 @@ public class Room {
     }
 
 
+    //adjust用
+    public void register_goods_adjust(int goods_number, boolean adjust){
+        Goods goods = new Goods(goods_number, roomId, setting, simulatorType, adjust);
+        goods_list.add(goods);
+    }
+
+
     //{shortage, sales}
     public int[] do_consume_room(int current_area){
 
-        int[] record = new int[2];
-        int interval = Util.get_interval(current_area, area_number);
+        if(roomType == 100){
+            int[] record = new int[2];
+            int interval = Util.get_interval(current_area, area_number);
 
-        for (Goods aGoods_list : goods_list) {
+            for (Goods aGoods_list : goods_list) {
 
-            //消費
-            int tmp[] = aGoods_list.consume_goods();
-            record[0] += tmp[0];//shortage
-            record[1] += tmp[1];//sales
+                //消費
+                int tmp[] = aGoods_list.consume_goods();
+                record[0] += tmp[0];//shortage
+                record[1] += tmp[1];//sales
+            }
+
+            return record;
+        }else{
+
+
+            //adjust用
+            int[] record = new int[2];
+            int interval = Util.get_interval(current_area, area_number);
+
+            for (Goods aGoods_list : goods_list) {
+
+                //消費
+                int tmp[] = aGoods_list.consume_goods(roomType);
+                record[0] += tmp[0];//shortage
+                record[1] += tmp[1];//sales
+            }
+
+            return record;
+
+
         }
-
-        return record;
     }
 
 

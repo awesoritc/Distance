@@ -111,8 +111,10 @@ public class Executor {
                 }else{
                     version = 2;
                 }
-                rooms_static[i].register_goods(version);
-                rooms_dynamic[i].register_goods(version);
+                //rooms_static[i].register_goods(version);
+                //rooms_dynamic[i].register_goods(version);
+                rooms_static[i].register_goods_adjust(version, true);
+                rooms_dynamic[i].register_goods_adjust(version, true);
             }
         }
         //
