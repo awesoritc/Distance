@@ -101,7 +101,60 @@ public class Util {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
 
+
+    public static void create_room_file_withoutgoods(String filename){
+        Setting setting = new Setting();
+        File rooms_file = new File(filename);
+        if(!rooms_file.exists()){
+            //ファイルがない場合作成
+            //部屋番号、エリア番号、座標、登録する商品番号
+
+            int a = 0;
+            try{
+
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(rooms_file, true)));
+
+                for(int i = 0; i < setting.number_of_areas; i++){
+
+                    for(int j = 0; j < ((int)(setting.number_of_rooms/setting.number_of_areas)); j++){
+
+                        int roomid = a;
+                        int areanumber = i;
+                        int[] pos = Util.create_position(i);
+                        Random rand = new Random();
+                        int random = rand.nextInt(10);
+                        int type;
+                        if(random < 5){
+                            type = 0;
+                        }else if(random < 7){
+                            type = 1;
+                        }else{
+                            type = 2;
+                        }
+
+
+                        pw.write(String.valueOf(roomid) + "," + String.valueOf(areanumber) + "," +
+                                "(" + String.valueOf(pos[0]) + ":" + String.valueOf(pos[1]) + ")," + String.valueOf(type) + "\n");
+
+
+
+                        //Util.file_write(String.valueOf(a) + "," + String.valueOf(i) + "," +
+                        //        "(" + String.valueOf(pos[0]) + ":" + String.valueOf(pos[0]) + ")," + String.valueOf(goodsnumber), "rooms1.csv");
+
+
+                        a++;
+                    }
+                }
+
+                pw.close();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

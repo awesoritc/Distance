@@ -23,11 +23,18 @@ public class Setting {
                     {0, x_top_divider[0], y_divider, y_map_size}
             };
 
+    final int moving_average_interval = 5;//移動平均に使用する
+    final int border_for_replenishment = 0;
+
+
     final int max_item = 10;
     final int[][] goods_variation = {{2, 1, 10}, {3, 2, 10}, {5, 3, 10}};//{mean, variance, max_item} goodsの種類(3種類)
 
-    final int moving_average_interval = 5;//移動平均に使用する
-    final int border_for_replenishment = 0;
+    final int[][] g_variation_new = {{0, 1, 10}, {1, 1, 10}, {2, 2, 10}};//商品(7:2:1)
+    final int[] max_room = {30, 100, 400};//部屋ごとの最大の商品数(5:3:2) 実際はもう少し正確に
+    final double[] demand_mul = {0.3, 1.0, 4.0};//需要の倍率(5:3:2)
+
+
 
 
     Setting(){

@@ -48,9 +48,27 @@ public class Room {
         this.last_replenishment = 0;
 
 
-        this.room_max = setting.max_room;
+        //this.room_max = setting.max_room;
 
         register_goods(item_number);
+    }
+
+
+
+
+    Room(int roomId, int areaNumber, int x_pos, int y_pos, int roomType, String simulatorType, boolean adjust){
+
+        this.setting = new Setting();
+        this.roomId = roomId;
+        this.area_number = areaNumber;
+        this.x_pos = x_pos;
+        this.y_pos = y_pos;
+
+        this.distance_to_gravity = new int[setting.number_of_areas];
+        this.last_replenishment = 0;
+
+
+        //this.room_max = setting.max_room;
     }
 
 

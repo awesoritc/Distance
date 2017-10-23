@@ -12,8 +12,9 @@ public class Executor {
         String TYPE_DYNAMIC = "dynamic";
 
         //String filename = "rooms1.csv";
-        String filename = "rooms2.csv";
-
+        //String filename = "rooms2.csv";
+        //String filename = "rooms3.csv";
+        String filename = "room_adjust.csv";
 
         //ファイルの書き込み
         File rooms_file = new File(filename);
@@ -21,7 +22,8 @@ public class Executor {
             //ファイルがない場合作成
             //部屋番号、エリア番号、座標、登録する商品番号
 
-            Util.create_room_file(filename);
+            //Util.create_room_file(filename);
+            Util.create_room_file_withoutgoods(filename);
 
         }
 
@@ -60,11 +62,11 @@ public class Executor {
         Room[] rooms_dynamic = new Room[setting.number_of_rooms];
 
         //Roomを作成
-        for (int i = 0; i < rooms_static.length; i++) {
+        /*for (int i = 0; i < rooms_static.length; i++) {
 
             //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、登録する商品番号)
             rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_STATIC);
-            rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], + room_element[i][4], TYPE_DYNAMIC);
+            rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_DYNAMIC);
         }
 
         //0が決め打ち, 1が動的
@@ -80,7 +82,41 @@ public class Executor {
                 rooms_static[i].register_goods(0);
                 rooms_dynamic[i].register_goods(0);
             }
+        }*/
+
+
+
+
+        //部屋ごとの調整用
+        for (int i = 0; i < rooms_static.length; i++) {
+
+            //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、部屋のタイプ)
+            rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_STATIC, true);
+            rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_DYNAMIC, true);
         }
+
+
+        Simulator simulator_static = new Simulator(setting, rooms_static, 0, TYPE_STATIC);
+        Simulator simulator_dynamic = new Simulator(setting, rooms_dynamic, 1, TYPE_DYNAMIC);
+
+        for (int i = 0; i < rooms_dynamic.length; i++) {
+            for (int j = 0; j < 10; j++) {
+                Random rand = new Random();
+                int random = rand.nextInt(10);
+                int version;
+                if(random < 7){
+                    version = 0;
+                }else if(random < 9){
+                    version = 1;
+                }else{
+                    version = 2;
+                }
+                rooms_static[i].register_goods(version);
+                rooms_dynamic[i].register_goods(version);
+            }
+        }
+        //
+
 
         //メインのシミュレーター
         for(int i = 0; i < setting.getDays(); i++){
@@ -165,7 +201,8 @@ public class Executor {
 
                     pw.write("roomID:" + String.valueOf(i) + ", day:" + String.valueOf(j) + ", sales:" +
                                 String.valueOf(sales_array.get(j)) + ", shortage:" + String.valueOf(shortage_array.get(j)) +
-                                ", consume:" + String.valueOf(consume_array.get(j)) + ", stock_before:" + String.valueOf(stock_before_array.get(j)) + ", expect_until_next:" + String.valueOf(expect_array.get(j)) + "\n");
+                                ", consume:" + String.valueOf(consume_array.get(j)) + ", stock_before:" + String.valueOf(stock_before_array.get(j)) +
+                                ", expect_until_next:" + String.valueOf(expect_array.get(j)) + "\n");
 
                     /*pw.write( String.valueOf(i) + "," + String.valueOf(j) + "," +
                             String.valueOf(sales_array.get(j)) + "," + String.valueOf(shortage_array.get(j)) +
