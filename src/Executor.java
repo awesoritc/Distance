@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Executor {
 
@@ -14,7 +15,6 @@ public class Executor {
         String filename = "rooms2.csv";
 
 
-        //TODO:これをそのまま両方に渡すのではなくて、ファイルから読み込んだ値を利用して2つのRoom配列を新規で別々に作る必要がある
         //ファイルの書き込み
         File rooms_file = new File(filename);
         if(!rooms_file.exists()){
@@ -25,6 +25,7 @@ public class Executor {
 
         }
 
+        Util.delete_file("replenishment_dy.csv");
         try {
             File file_static = new File(TYPE_STATIC + ".csv");
             if (file_static.exists()) {
@@ -58,6 +59,7 @@ public class Executor {
         Room[] rooms_static = new Room[setting.number_of_rooms];
         Room[] rooms_dynamic = new Room[setting.number_of_rooms];
 
+        //Roomを作成
         for (int i = 0; i < rooms_static.length; i++) {
 
             //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、登録する商品番号)
@@ -69,17 +71,29 @@ public class Executor {
         Simulator simulator_static = new Simulator(setting, rooms_static, 0, TYPE_STATIC);
         Simulator simulator_dynamic = new Simulator(setting, rooms_dynamic, 1, TYPE_DYNAMIC);
 
+
+        //testで商品数を増やす
+        for (int i = 0; i < rooms_dynamic.length; i++) {
+            for (int j = 0; j < 9; j++) {
+                Random rand = new Random();
+                int random = rand.nextInt(3);
+                rooms_static[i].register_goods(random);
+                rooms_dynamic[i].register_goods(random);
+            }
+        }
+
+        //メインのシミュレーター
         for(int i = 0; i < setting.getDays(); i++){
 
 
-            int area = i%5;
+            int curreant_area = i%5;
 
-            /*simulator_static.create_route(area, i);
-            simulator_static.do_consume_simulator(i);
-            simulator_static.do_replenishment_simulator(i);*/
+            simulator_static.create_route(i, curreant_area);
+            simulator_static.do_consume_simulator(i, curreant_area);
+            simulator_static.do_replenishment_simulator(i);
 
-            simulator_dynamic.create_route(area, i);
-            simulator_dynamic.do_consume_simulator(i);
+            simulator_dynamic.create_route(i, curreant_area);
+            simulator_dynamic.do_consume_simulator(i, curreant_area);
             simulator_dynamic.do_replenishment_simulator(i);
 
         }
@@ -92,7 +106,7 @@ public class Executor {
         System.out.println("shortage_static:" + simulator_static.get_shortage());
         System.out.println("shortage_dynamic:" + simulator_dynamic.get_shortage());
         System.out.println();
-        System.out.println(simulator_dynamic.counterb);
+        System.out.println(rooms_dynamic[0].getExpect_history().size());
 
 
 
@@ -143,6 +157,7 @@ public class Executor {
                 ArrayList<Integer> shortage_array = rooms_dynamic[i].getGoods_list().get(0).getShortage_record();
                 ArrayList<Integer> consume_array = rooms_dynamic[i].getGoods_list().get(0).getConsume_history();
                 ArrayList<Integer> stock_before_array = rooms_dynamic[i].getGoods_list().get(0).getStock_history_before();
+                ArrayList<Integer> expect_array = rooms_dynamic[i].getExpect_history();
                 ArrayList<Integer> stock_after_array = rooms_dynamic[i].getGoods_list().get(0).getStock_history_after();
                 for (int j = 0; j < sales_array.size(); j++) {
 
@@ -150,7 +165,7 @@ public class Executor {
 
                     pw.write("roomID:" + String.valueOf(i) + ", day:" + String.valueOf(j) + ", sales:" +
                                 String.valueOf(sales_array.get(j)) + ", shortage:" + String.valueOf(shortage_array.get(j)) +
-                                ", consume:" + String.valueOf(consume_array.get(j)) + ", stock_before:" + String.valueOf(stock_before_array.get(j)) + "\n");
+                                ", consume:" + String.valueOf(consume_array.get(j)) + ", stock_before:" + String.valueOf(stock_before_array.get(j)) + ", expect_until_next:" + String.valueOf(expect_array.get(j)) + "\n");
 
                     /*pw.write( String.valueOf(i) + "," + String.valueOf(j) + "," +
                             String.valueOf(sales_array.get(j)) + "," + String.valueOf(shortage_array.get(j)) +

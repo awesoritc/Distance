@@ -15,6 +15,7 @@ public class Room {
     private int last_replenishment;
 
     private ArrayList<Goods> goods_list = new ArrayList<>();
+    private ArrayList<Integer> expect_history = new ArrayList<>();
 
 
     private int[] distance_to_gravity;
@@ -92,16 +93,9 @@ public class Room {
         return goods_list;
     }
 
-
-
-
-
-
-
-
-
-
-
+    public ArrayList<Integer> getExpect_history() {
+        return expect_history;
+    }
 
     public void setDistance_to_gravity(int[][] gravity_points) {
 
@@ -152,11 +146,14 @@ public class Room {
 
 
     //{shortage, sales}
-    public int[] do_consume_room(){
+    public int[] do_consume_room(int current_area){
 
         int[] record = new int[2];
+        int interval = Util.get_interval(current_area, area_number);
 
         for (Goods aGoods_list : goods_list) {
+
+            //消費
             int tmp[] = aGoods_list.consume_goods();
             record[0] += tmp[0];//shortage
             record[1] += tmp[1];//sales
@@ -185,13 +182,17 @@ public class Room {
     }
 
 
+    public void write_expect_history_room(int total_shortage){
+        expect_history.add(total_shortage);
+    }
+
     public int get_room_shortage_til_next(int current_area){
 
         int interval = Util.get_interval(current_area, area_number);
 
         int total_shortage = 0;
         for (Goods aGoods_list : goods_list) {
-            total_shortage += aGoods_list.getShortage(interval);//aGoods_list.get_shortage_til_next(interval);
+            total_shortage += aGoods_list.getExpect_goods(interval);//aGoods_list.get_shortage_til_next(interval);
         }
 
         return total_shortage;

@@ -11,7 +11,6 @@ public class Goods {
     private int roomId;
 
     private ArrayList<Integer> sales_record, shortage_record, consume_history, stock_history_before, stock_history_after;//売り上げ、欠品数、需用量を書き出し
-    private ArrayList<Integer> expect_history, value_history;
 
     private Setting setting;
     private String simulatorType;
@@ -34,7 +33,6 @@ public class Goods {
         sales_record = new ArrayList<>();
         shortage_record = new ArrayList<>();
         consume_history = new ArrayList<>();
-        expect_history = new ArrayList<>();
         stock_history_before = new ArrayList<>();
         stock_history_after = new ArrayList<>();
     }
@@ -191,11 +189,11 @@ public class Goods {
 
 
 
-    public int getShortage(int interval){
+    public int getExpect_goods(int interval){
         //5日間の売り上げの移動平均で消費量を予測
 
         int tmp = 0;
-        if(sales_record.size() > setting.getMoving_average_interval() * 5){
+        if(sales_record.size() >= setting.getMoving_average_interval() * 5){
             //25以上売り上げデータがある時
             for(int i = 0; i < setting.getMoving_average_interval() * 5; i++){
                 tmp += sales_record.get(sales_record.size()-(i+1));
@@ -210,7 +208,7 @@ public class Goods {
                 return 0;
             }
 
-        }else if(sales_record.size() > 5){
+        }else if(sales_record.size() >= 5){
             //5以上売り上げデータがある時
             return get_shortage_til_next(interval);
         }else{

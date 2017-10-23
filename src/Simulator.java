@@ -81,7 +81,7 @@ public class Simulator {
 
 
     //補充する順番に部屋番号を返却
-    public void create_route(int current_area, int day){
+    public void create_route(int day, int current_area){
         RouteSelector routeSelector = new RouteSelector(rooms, setting);
         //routeSelector.route_time(area_number);
 
@@ -95,6 +95,9 @@ public class Simulator {
         total_time += calculate_route_time(replenishment_array);
 
 
+        for (int i = 0; i < rooms.length; i++) {
+            rooms[i].write_expect_history_room(rooms[i].get_room_shortage_til_next(current_area));
+        }
 
         //補充ルートを書き出し
         try {
@@ -138,10 +141,10 @@ public class Simulator {
 
 
     //消費
-    public void do_consume_simulator(int day){
+    public void do_consume_simulator(int day, int current_area){
 
         for(int i = 0; i < num_rooms; i++){
-            int[] tmp = rooms[i].do_consume_room();
+            int[] tmp = rooms[i].do_consume_room(current_area);
             shortage += tmp[0];
             sales += tmp[1];
             sales_history.add(tmp[1]);
