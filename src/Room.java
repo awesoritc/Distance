@@ -13,6 +13,7 @@ public class Room {
     private int area_number;
     private int route_number;
     private int last_replenishment;
+    private int room_max;
 
     private ArrayList<Goods> goods_list = new ArrayList<>();
     private ArrayList<Integer> expect_history = new ArrayList<>();
@@ -45,6 +46,9 @@ public class Room {
 
         this.distance_to_gravity = new int[setting.number_of_areas];
         this.last_replenishment = 0;
+
+
+        this.room_max = setting.max_room;
 
         register_goods(item_number);
     }
