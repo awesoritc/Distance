@@ -216,4 +216,31 @@ public class Goods {
             return 0;
         }
     }
+
+
+
+
+    //TODO:ここの処理を考慮
+    //商品のMaxの調整用の関数
+    public void adjust_max(){
+
+        //過去のstockの履歴から0となっている場所が多すぎる場合、Maxを増やす,少なすぎる場合Maxを減らす
+        //増やす場合に減らす場所を決める必要がある
+        //Roomから呼び出し、最大の商品数を超えないように設定
+
+        //直近のstock数の0の個数を計算
+        int count = 0;
+        for (int i = 0; i < 10; i++) {
+            if(stock_history_before.get(stock_history_before.size()-(1+i)) == 0){
+                count++;
+            }
+        }
+        if(count > 5){
+            //stock少なすぎ
+        }else if(count < 1){
+            //stock多すぎ
+        }else{
+            //このままでok
+        }
+    }
 }

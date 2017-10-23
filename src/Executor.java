@@ -77,8 +77,8 @@ public class Executor {
             for (int j = 0; j < 9; j++) {
                 Random rand = new Random();
                 int random = rand.nextInt(3);
-                rooms_static[i].register_goods(random);
-                rooms_dynamic[i].register_goods(random);
+                rooms_static[i].register_goods(0);
+                rooms_dynamic[i].register_goods(0);4
             }
         }
 

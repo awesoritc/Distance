@@ -211,4 +211,16 @@ public class Room {
 
         return (double)(get_room_shortage_til_next(current_area) / (double)distance_to_gravity[current_area]);
     }
+
+
+
+    public void adjust_amount_room(){
+
+        //TODO:商品の設置数を調整する
+
+        //roomのMaxを超えてはいけない
+        for(Goods aGoods: goods_list){
+            aGoods.adjust_max();
+        }
+    }
 }
