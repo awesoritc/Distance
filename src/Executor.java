@@ -23,6 +23,7 @@ public class Executor {
             //部屋番号、エリア番号、座標、登録する商品番号
 
             //Util.create_room_file(filename);
+            //ここで部屋の比率を調整
             Util.create_room_file_withoutgoods(filename);
 
         }
@@ -90,7 +91,7 @@ public class Executor {
         //部屋ごとの調整用
         for (int i = 0; i < rooms_static.length; i++) {
 
-            //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、部屋のタイプ)
+            //room_element[roomId][0~4](部屋番号、エリア番号、x座標、y座標、部屋の種類、部屋のタイプ)
             rooms_static[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_STATIC, true);
             rooms_dynamic[i] = new Room(room_element[i][0], room_element[i][1], room_element[i][2], room_element[i][3], room_element[i][4], TYPE_DYNAMIC, true);
         }
@@ -99,6 +100,7 @@ public class Executor {
         Simulator simulator_static = new Simulator(setting, rooms_static, 0, TYPE_STATIC);
         Simulator simulator_dynamic = new Simulator(setting, rooms_dynamic, 1, TYPE_DYNAMIC);
 
+        //部屋の商品の比率を調整
         for (int i = 0; i < rooms_dynamic.length; i++) {
             for (int j = 0; j < 10; j++) {
                 Random rand = new Random();
@@ -120,6 +122,9 @@ public class Executor {
         //
 
 
+
+        ArrayList<Integer> salesarray = new ArrayList<>(), shortagearray = new ArrayList<>();
+
         //メインのシミュレーター
         for(int i = 0; i < setting.getDays(); i++){
 
@@ -134,6 +139,15 @@ public class Executor {
             simulator_dynamic.do_consume_simulator(i, curreant_area);
             simulator_dynamic.do_replenishment_simulator(i);
 
+
+            salesarray.add(simulator_dynamic.get_sales());
+            shortagearray.add(simulator_dynamic.get_shortage());
+
+        }
+
+        Util.file_write("sales,shortage\n", "move.csv");
+        for (int i = 0; i < salesarray.size(); i++) {
+            Util.file_write(salesarray.get(i) + "," + shortagearray.get(i) + "\n", "move.csv");
         }
 
         System.out.println("time_static:" + simulator_static.getTotal_time());
@@ -251,6 +265,10 @@ public class Executor {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+
+
+
+
 
 
     }

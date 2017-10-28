@@ -105,6 +105,7 @@ public class Util {
     }
 
 
+    //ここで部屋の比率を調整
     public static void create_room_file_withoutgoods(String filename){
         Setting setting = new Setting();
         File rooms_file = new File(filename);
