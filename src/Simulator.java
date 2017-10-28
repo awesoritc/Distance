@@ -91,6 +91,8 @@ public class Simulator {
         ArrayList<Room> array = route(rooms, current_area, day);//routeSelector.choose_rooms(current_area);//routeSelector.choose_rooms_to_go(current_area);
 
         replenishment_array = array;//sort_in_order_roomId(array);
+        //greedy
+        //replenishment_array = greedy(current_area, rooms);
 
         total_time += calculate_route_time(replenishment_array);
 
@@ -123,6 +125,42 @@ public class Simulator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+
+    //greedy
+    public ArrayList<Room> greedy(int current_area, Room[] rs){
+
+
+        //充足率低い順に並べる
+        for (int i = 0; i < rs.length; i++) {
+            for (int j = 0; j < rs.length; j++) {
+                if(i < j){
+                    if(rs[i].calc_suf_rate() > rs[j].calc_suf_rate()){
+                        Room tmp = rs[i];
+                        rs[i] = rs[j];
+                        rs[j] = tmp;
+                    }
+                }
+            }
+        }
+
+        ArrayList<Room> greedy_route = new ArrayList<>();
+        for (int i = 0; i < rs.length; i++) {
+            if(rs[i].calc_suf_rate() < 0.5 && greedy_route.size() < 20){
+                greedy_route.add(rs[i]);
+            }
+        }
+
+        if(greedy_route.size() == 0){
+            //なければ固定のルートを補充
+            for (int i = 0; i < 20; i++) {
+                greedy_route.add(rs[i + current_area*20]);
+            }
+        }
+
+        return greedy_route;
     }
 
 

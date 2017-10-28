@@ -21,6 +21,9 @@ public class Room {
     private int[] distance_to_gravity;
 
 
+    private int suf_rate; //部屋あたりのstockの充足率
+
+
     /*Room(int area_number, int route_number, Setting setting, int id){
 
         this.id = id;
@@ -222,5 +225,19 @@ public class Room {
         for(Goods aGoods: goods_list){
             aGoods.adjust_max();
         }
+    }
+
+
+    public double calc_suf_rate(){
+
+        double tmp_stock = 0;
+        double tmp_max = 0;
+        for(Goods aGoods: goods_list){
+            tmp_stock += aGoods.getStock();
+            tmp_max += aGoods.getMax_item();
+        }
+
+        //System.out.println("stock:" + tmp_stock + ", max:" + tmp_max);
+        return tmp_stock / tmp_max;
     }
 }
