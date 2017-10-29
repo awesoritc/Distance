@@ -22,20 +22,6 @@ public class Room {
     private int[] distance_to_gravity;
 
 
-    /*Room(int area_number, int route_number, Setting setting, int id){
-
-        this.id = id;
-        this.setting = setting;
-
-        this.area_number = area_number;
-        this.route_number = route_number;
-
-        this.distance_to_gravity = new int[setting.number_of_areas];
-
-        create_position(area_number);
-    }*/
-
-
     Room(int roomId, int areaNumber, int x_pos, int y_pos, int item_number, String simulatorType){
 
         this.setting = new Setting();
@@ -48,6 +34,7 @@ public class Room {
         this.last_replenishment = 0;
 
 
+        this.simulatorType = simulatorType;
         this.room_max = setting.max_room[roomType];
 
         register_goods(item_number);
@@ -55,7 +42,7 @@ public class Room {
 
 
 
-    int roomType = 100;
+    int roomType;// = 100;
 
     Room(int roomId, int areaNumber, int x_pos, int y_pos, int roomType, String simulatorType, boolean adjust){
 
@@ -69,8 +56,10 @@ public class Room {
         this.last_replenishment = 0;
 
 
-        //this.room_max = setting.max_room;
+        this.simulatorType = simulatorType;
         this.roomType = roomType;
+
+        room_max = setting.max_room[roomType];
     }
 
 
@@ -229,6 +218,18 @@ public class Room {
 
         last_replenishment = day;
 
+
+
+        /*//商品の設置数を調整
+        if(simulatorType.equals("dynamic")){
+            adjust_amount_room();
+            for (Goods aGoods_list : goods_list) {
+                aGoods_list.replenishment_goods();
+            }
+        }*/
+
+
+
         return hstock;
     }
 
@@ -270,8 +271,86 @@ public class Room {
         //TODO:商品の設置数を調整する
 
         //roomのMaxを超えてはいけない
-        for(Goods aGoods: goods_list){
-            aGoods.adjust_max();
+        //売上が0の時のための最小設置数を指定する
+        //これまでの売上の履歴から比例配分
+        double[] sales_sum_each_goods = new double[goods_list.size()];
+        for (int i = 0; i < sales_sum_each_goods.length; i++) {
+            sales_sum_each_goods[i] = 0;
         }
+
+        int sales_length = goods_list.get(0).getSales_record().size();
+
+        int[] share = new int[goods_list.size()];
+        if(sales_length >= 25){
+            //25以上の売上記録が存在した時
+
+            for(int i = 0; i < goods_list.size(); i++){
+
+                ArrayList<Integer> a = goods_list.get(i).getSales_record();
+                for (int j = 0; j < 25; j++) {
+                    //System.out.println(a.get(i));
+                    sales_sum_each_goods[i] += a.get(sales_length-(j+1));
+                }
+            }
+
+            int total = 0;
+            for (double sales_sum_each_good : sales_sum_each_goods) {
+                total += sales_sum_each_good;
+            }
+
+            int chk_amount = 0;
+            for (int i = 0; i < share.length; i++) {
+                share[i] = (int)Math.round(room_max * (sales_sum_each_goods[i]/total));
+                if(share[i] <= 0){
+                    share[i] = setting.min_amount;
+                }
+
+                System.out.println(share[i]);
+
+                chk_amount += share[i];
+            }
+
+            if(chk_amount > room_max){
+                int i = 0;
+                System.out.println("max:" + room_max + ", chk:" + chk_amount);
+                while(chk_amount > room_max){
+                    if(share[i%goods_list.size()] <= setting.min_amount){
+                        i++;
+                        continue;
+                    }
+                    share[i%goods_list.size()] -= 1;
+                    chk_amount -= 1;
+                    System.out.println("max:" + room_max + ", chk:" + chk_amount);
+                    i++;
+                }
+            }
+
+
+        }else if(sales_length >= 5){
+            //5以上の売上記録が存在した時
+
+            //TODO:比例分配を設定
+        }else{
+            //売上記録が5以下の時
+
+            //何もしない
+        }
+
+        for (int i = 0; i < goods_list.size(); i++) {
+            goods_list.get(i).setMax_item(share[i]);
+        }
+    }
+
+
+    public double calc_suf_rate(){
+
+        double tmp_stock = 0;
+        double tmp_max = 0;
+        for(Goods aGoods: goods_list){
+            tmp_stock += aGoods.getStock();
+            tmp_max += aGoods.getMax_item();
+        }
+
+        return tmp_stock / tmp_max;
     }
 }

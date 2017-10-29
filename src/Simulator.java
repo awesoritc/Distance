@@ -108,10 +108,6 @@ public class Simulator {
             for (int i = 0; i < replenishment_array.size(); i++) {
                 Room tm = replenishment_array.get(i);
 
-                /*pw.write("roomid:" + tm.getRoomId() + ", day:" + day + ", current_area:" + current_area + ", room_area:" + tm.getArea_number() +
-                        ", stock:" + tm.getGoods_list().get(0).getStock() + ", shortage_until_next:" + tm.get_room_shortage_til_next(current_area) +
-                        ", distance_to_current:" + tm.getDistance_to_gravity()[current_area] + ", value:" + tm.get_value(current_area) + "\n");*/
-
 
                 pw.write(tm.getRoomId() + "," + day + "," + current_area + "," + tm.getArea_number() +
                         "," + tm.getGoods_list().get(0).getStock() + "," + tm.get_room_shortage_til_next(current_area) +
@@ -403,6 +399,102 @@ public class Simulator {
         }
 
         return null;
+    }
+
+
+
+    //greedy
+    public ArrayList<Room> greedy(int current_area, int day,  Room[] rs){
+
+
+
+
+        /*for (int i = 0; i < rs.length; i++) {
+            System.out.println("day:" + day + ", id:" + rs[i].getRoomId() + ", suf_rate:" + rs[i].calc_suf_rate() + "");
+        }System.out.println("");*/
+
+
+        ArrayList<Room> greedy_route = new ArrayList<>();
+        if(day < 5){
+            //固定
+
+            for (int i = 0; i < 20; i++) {
+                System.out.println(i + current_area*20);
+                greedy_route.add(rs[i + current_area*20]);
+                if(greedy_route.size() >= 20){
+                    break;
+                }
+            }
+
+            System.out.println("固定:" + day);
+        }else{
+
+
+            int routesize = 0;
+            //充足率低い順に並べる
+            for (int i = 0; i < rs.length; i++) {
+                for (int j = 0; j < rs.length; j++) {
+                    if(i < j){
+                        if(rs[i].calc_suf_rate() > rs[j].calc_suf_rate()){
+                            Room tmp = rs[i];
+                            rs[i] = rs[j];
+                            rs[j] = tmp;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < rs.length; i++) {
+                if(greedy_route.size() < 20){
+                    greedy_route.add(rs[i]);
+                }
+                /*if(routesize < 100){
+                    greedy_route.add(rs[i]);
+                    if(i != 0){
+                        routesize = calculate_route_time(greedy_route);
+                    }
+                }*/
+            }
+
+            greedy_route = set_id_order(greedy_route);
+
+
+            System.out.println("Day:" + day);
+            for (int i = 0; i < greedy_route.size(); i++) {
+                System.out.println(greedy_route.get(i).getRoomId());
+            }
+            System.out.println("");
+
+            /*if(greedy_route.size() < 20){
+                //なければ固定のルートを補充
+                for (int i = 0; i < 20; i++) {
+                    greedy_route.add(rs[i + current_area*20]);
+                    if(greedy_route.size() >= 20){
+                        break;
+                    }
+                }
+            }*/
+        }
+
+        return greedy_route;
+    }
+
+
+    public ArrayList<Room> set_id_order(ArrayList<Room> route){
+        for (int i = 0; i < route.size(); i++) {
+            for (int j = 0; j < route.size(); j++) {
+
+                if(i < j){
+                    //iよりもjの価値の方が高ければ、jの部屋を前に変更
+                    if(route.get(i).getRoomId() > route.get(j).getRoomId()){
+                        Room tmp = route.get(i);
+                        route.set(i, route.get(j));
+                        route.set(j, tmp);
+                    }
+                }
+            }
+        }
+        return route;
     }
 
     public int getTotal_time() {

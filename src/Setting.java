@@ -27,7 +27,6 @@ public class Setting {
     final int border_for_replenishment = 0;
 
 
-    final int max_item = 10;
     final int[][] goods_variation = {{2, 1, 10}, {3, 2, 10}, {5, 3, 10}};//{mean, variance, max_item} goodsの種類(3種類)
 
     final int[][] g_variation_new = {{0, 1, 10}, {1, 1, 10}, {2, 2, 10}};//商品(7:2:1)
@@ -35,6 +34,7 @@ public class Setting {
     final double[] demand_mul = {0.3, 1.0, 4.0};//需要の倍率(5:3:2)
 
 
+    final int min_amount = 3;
 
 
     Setting(){
@@ -53,10 +53,6 @@ public class Setting {
 
     public int getNumber_of_rooms() {
         return number_of_rooms;
-    }
-
-    public int getMax_item() {
-        return max_item;
     }
 
     public int getX_map_size() {

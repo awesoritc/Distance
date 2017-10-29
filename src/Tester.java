@@ -6,25 +6,11 @@ public class Tester {
     public static void main(String args[]) {
 
 
-        ArrayList<Integer> array = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            array.add(i);
-        }
+        Room r = new Room(4,0,0,4,0,"dynamic");
 
-
-        for (int i = 0; i < array.size(); i++) {
-            System.out.println(array.get(i));
-        }
-
-        for (int i = 0; i < array.size(); i++) {
-            if(array.get(i)%2 == 0){
-                array.remove(i);
-            }
-        }
-
-
-        for (int i = 0; i < array.size(); i++) {
-            System.out.println(array.get(i));
+        for (int i = 0; i < 5; i++) {
+            r.do_consume_room(i);
+            r.replenishment_room(i);
         }
     }
 
