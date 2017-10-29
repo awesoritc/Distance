@@ -82,6 +82,10 @@ public class Executor {
             }
         }*/
 
+
+        ArrayList<Integer> salesarray = new ArrayList<>();
+        ArrayList<Integer> shortagearray = new ArrayList<>();
+
         //メインのシミュレーター
         for(int i = 0; i < setting.getDays(); i++){
 
@@ -96,6 +100,16 @@ public class Executor {
             simulator_dynamic.do_consume_simulator(i, curreant_area);
             simulator_dynamic.do_replenishment_simulator(i);
 
+
+            salesarray.add(simulator_dynamic.get_sales());
+            shortagearray.add(simulator_dynamic.get_shortage());
+
+        }
+
+
+        Util.file_write("sales,shortage\n", "move.csv");
+        for (int i = 0; i < salesarray.size(); i++) {
+            Util.file_write(salesarray.get(i) + "," + shortagearray.get(i) + "\n", "move.csv");
         }
 
         System.out.println("time_static:" + simulator_static.getTotal_time());
