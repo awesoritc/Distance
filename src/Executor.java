@@ -73,14 +73,14 @@ public class Executor {
 
 
         //testで商品数を増やす
-        for (int i = 0; i < rooms_dynamic.length; i++) {
+        /*for (int i = 0; i < rooms_dynamic.length; i++) {
             for (int j = 0; j < 9; j++) {
                 Random rand = new Random();
                 int random = rand.nextInt(3);
                 rooms_static[i].register_goods(0);
                 rooms_dynamic[i].register_goods(0);
             }
-        }
+        }*/
 
         //メインのシミュレーター
         for(int i = 0; i < setting.getDays(); i++){

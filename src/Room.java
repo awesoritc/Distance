@@ -170,7 +170,7 @@ public class Room {
     public ArrayList<Integer> replenishment_room(int day){
 
 
-        Util.file_write("day:" + day + ", area_number:" + day%5 + ", roomID:" + roomId + ", stock:" + getGoods_list().get(0).getStock() + "\n", "replenishment_dy");
+        Util.file_write("day:" + day + ", area_number:" + day%5 + ", roomID:" + roomId + ", stock:" + getGoods_list().get(0).getStock() + ", suf_rate:" + calc_suf_rate() + "\n", "replenishment_dy");
 
         ArrayList<Integer> hstock = new ArrayList<>();
         for (Goods aGoods_list : goods_list) {

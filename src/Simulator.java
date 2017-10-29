@@ -90,9 +90,15 @@ public class Simulator {
 
         ArrayList<Room> array = route(rooms, current_area, day);//routeSelector.choose_rooms(current_area);//routeSelector.choose_rooms_to_go(current_area);
 
-        replenishment_array = array;//sort_in_order_roomId(array);
-        //greedy
-        //replenishment_array = greedy(current_area, rooms);
+        //replenishment_array = array;//sort_in_order_roomId(array);
+
+        if(simulatorType.equals("dynamic")){
+            //greedy
+            replenishment_array = greedy(current_area, day, rooms);
+        }else{
+            replenishment_array = array;//sort_in_order_roomId(array);
+        }
+
 
         total_time += calculate_route_time(replenishment_array);
 
@@ -130,34 +136,76 @@ public class Simulator {
 
 
     //greedy
-    public ArrayList<Room> greedy(int current_area, Room[] rs){
+    public ArrayList<Room> greedy(int current_area, int day,  Room[] rs){
 
 
-        //充足率低い順に並べる
-        for (int i = 0; i < rs.length; i++) {
-            for (int j = 0; j < rs.length; j++) {
-                if(i < j){
-                    if(rs[i].calc_suf_rate() > rs[j].calc_suf_rate()){
-                        Room tmp = rs[i];
-                        rs[i] = rs[j];
-                        rs[j] = tmp;
+
+
+        /*for (int i = 0; i < rs.length; i++) {
+            System.out.println("day:" + day + ", id:" + rs[i].getRoomId() + ", suf_rate:" + rs[i].calc_suf_rate() + "");
+        }System.out.println("");*/
+
+
+        ArrayList<Room> greedy_route = new ArrayList<>();
+        if(day < 5){
+            //固定
+
+            for (int i = 0; i < 20; i++) {
+                System.out.println(i + current_area*20);
+                greedy_route.add(rs[i + current_area*20]);
+                if(greedy_route.size() >= 20){
+                    break;
+                }
+            }
+
+            System.out.println("固定:" + day);
+        }else{
+
+
+            int routesize = 0;
+            //充足率低い順に並べる
+            for (int i = 0; i < rs.length; i++) {
+                for (int j = 0; j < rs.length; j++) {
+                    if(i < j){
+                        if(rs[i].calc_suf_rate() > rs[j].calc_suf_rate()){
+                            Room tmp = rs[i];
+                            rs[i] = rs[j];
+                            rs[j] = tmp;
+                        }
                     }
                 }
             }
-        }
 
-        ArrayList<Room> greedy_route = new ArrayList<>();
-        for (int i = 0; i < rs.length; i++) {
-            if(rs[i].calc_suf_rate() < 0.5 && greedy_route.size() < 20){
-                greedy_route.add(rs[i]);
+            for (int i = 0; i < rs.length; i++) {
+                if(greedy_route.size() < 20){
+                    greedy_route.add(rs[i]);
+                }
+                /*if(routesize < 100){
+                    greedy_route.add(rs[i]);
+                    if(i != 0){
+                        routesize = calculate_route_time(greedy_route);
+                    }
+                }*/
             }
-        }
 
-        if(greedy_route.size() == 0){
-            //なければ固定のルートを補充
-            for (int i = 0; i < 20; i++) {
-                greedy_route.add(rs[i + current_area*20]);
+            greedy_route = set_idorder(greedy_route);
+
+
+            System.out.println("Day:" + day);
+            for (int i = 0; i < greedy_route.size(); i++) {
+                System.out.println(greedy_route.get(i).getRoomId());
             }
+            System.out.println("");
+
+            /*if(greedy_route.size() < 20){
+                //なければ固定のルートを補充
+                for (int i = 0; i < 20; i++) {
+                    greedy_route.add(rs[i + current_area*20]);
+                    if(greedy_route.size() >= 20){
+                        break;
+                    }
+                }
+            }*/
         }
 
         return greedy_route;
@@ -172,7 +220,7 @@ public class Simulator {
 
         //System.out.println();
         for(int i = 0; i < replenishment_array.size(); i++){
-            ArrayList<Integer> hstock = rooms[replenishment_array.get(i).getRoomId()].replenishment_room(day);
+            ArrayList<Integer> hstock = replenishment_array.get(i).replenishment_room(day);
         }
 
     }
@@ -293,7 +341,7 @@ public class Simulator {
 
             //ここからエリア固定
             int val_counter = 0;
-        for (int i = 0; i < rooms.length; i++) {
+            for (int i = 0; i < rooms.length; i++) {
             if(rooms[i].getArea_number() == current_area){
                 array.add(rooms[i]);
             }
@@ -441,6 +489,25 @@ public class Simulator {
         }
 
         return null;
+    }
+
+
+    public ArrayList<Room> set_idorder(ArrayList<Room> route){
+
+        for (int i = 0; i < route.size(); i++) {
+            for (int j = 0; j < route.size(); j++) {
+
+                if(i < j){
+                    if(route.get(i).getRoomId() > route.get(j).getRoomId()){
+                        Room tmp = route.get(i);
+                        route.set(i, route.get(j));
+                        route.set(j, tmp);
+                    }
+                }
+            }
+        }
+
+        return route;
     }
 
     public int getTotal_time() {
